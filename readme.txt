@@ -43,7 +43,7 @@ Upgrade to **Direct Link Checkout PRO** to unlock:
 * ⭐ **REST API** - Integrate with external tools
 * ⭐ **Priority Support** - Fast response from our expert team
 
-[Learn more about PRO features →](https://close.technology/plugins/direct-link-checkout-pro/)
+[Learn more about PRO features →](https://close.technology/en/wordpress-plugins/direct-link-checkout-pro/)
 
 = 🎯 Perfect For =
 

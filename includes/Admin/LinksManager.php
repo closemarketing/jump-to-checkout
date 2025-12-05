@@ -264,8 +264,8 @@ class LinksManager {
 				<div class="cldc-free-footer" style="margin-top: 30px; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
 					<p style="margin: 0 0 10px 0;"><strong><?php esc_html_e( 'You are using Direct Link Checkout FREE', 'direct-link-checkout' ); ?></strong></p>
 					<p style="margin: 0 0 15px 0; color: #666; font-size: 13px;">
-						<?php esc_html_e( 'Developed by Close Marketing', 'direct-link-checkout' ); ?> | 
-						<a href="https://close.marketing" target="_blank">close.marketing</a>
+						<?php esc_html_e( 'Developed by Close Technology', 'direct-link-checkout' ); ?> | 
+						<a href="https://close.technology" target="_blank">close.technology</a>
 					</p>
 					<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary" target="_blank">
 						<?php esc_html_e( 'Upgrade to PRO for all features', 'direct-link-checkout' ); ?>

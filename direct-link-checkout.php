@@ -29,6 +29,7 @@ define( 'CLDC_PLUGIN', __FILE__ );
 define( 'CLDC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'CLDC_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CLDC_IS_PRO', false ); // FREE version.
+define( 'CLDC_UPGRADE_URL', 'https://close.technology/en/wordpress-plugins/direct-link-checkout-pro/' );
 
 // Load Composer autoloader (includes PSR-4 autoload for plugin classes).
 if ( file_exists( CLDC_PLUGIN_PATH . 'vendor/autoload.php' ) ) {

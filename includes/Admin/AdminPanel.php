@@ -185,12 +185,13 @@ class AdminPanel {
 			'cldc-admin',
 			'cldcAdmin',
 			array(
-				'ajax_url'   => admin_url( 'admin-ajax.php' ),
-				'nonce'      => wp_create_nonce( 'cldc_admin_nonce' ),
-				'is_pro'     => Features::is_pro(),
-				'max_links'  => Features::max_links(),
+				'ajax_url'     => admin_url( 'admin-ajax.php' ),
+				'nonce'        => wp_create_nonce( 'cldc_admin_nonce' ),
+				'is_pro'       => Features::is_pro(),
+				'max_links'    => Features::max_links(),
 				'max_products' => Features::max_products_per_link(),
-				'i18n'       => array(
+				'upgrade_url'  => Features::get_upgrade_url(),
+				'i18n'         => array(
 					'copy_success'         => __( 'Link copied to clipboard!', 'direct-link-checkout' ),
 					'copy_error'           => __( 'Failed to copy link.', 'direct-link-checkout' ),
 					'generate_error'       => __( 'Error generating link.', 'direct-link-checkout' ),
@@ -200,6 +201,10 @@ class AdminPanel {
 					'no_products_selected' => __( 'Please select at least one product.', 'direct-link-checkout' ),
 					'limit_reached'        => __( 'You have reached the active links limit in the FREE version.', 'direct-link-checkout' ),
 					'max_products_reached' => __( 'The FREE version allows only 1 product per link. Upgrade to PRO for multiple products.', 'direct-link-checkout' ),
+					'upgrade_confirm'      => __( 'Do you want to upgrade to PRO now?', 'direct-link-checkout' ),
+					'no_link_in_response'  => __( 'No link in response', 'direct-link-checkout' ),
+					'no_products_label'    => __( 'No products selected.', 'direct-link-checkout' ),
+					'remove_button'        => __( 'Remove', 'direct-link-checkout' ),
 				),
 			)
 		);
@@ -207,13 +212,13 @@ class AdminPanel {
 		// Select2 for product search (local copy).
 		wp_enqueue_style(
 			'cldc-select2',
-			CLDC_PLUGIN_URL . 'vendor/select2/select2.min.css',
+			CLDC_PLUGIN_URL . 'vendor/select2/select2/dist/css/select2.min.css',
 			array(),
 			'4.1.0'
 		);
 		wp_enqueue_script(
 			'cldc-select2',
-			CLDC_PLUGIN_URL . 'vendor/select2/select2.min.js',
+			CLDC_PLUGIN_URL . 'vendor/select2/select2/dist/js/select2.min.js',
 			array( 'jquery' ),
 			'4.1.0',
 			true

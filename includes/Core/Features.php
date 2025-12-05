@@ -154,7 +154,7 @@ class Features {
 	 * @return string
 	 */
 	public static function get_upgrade_url() {
-		return 'https://close.technology/plugins/direct-link-checkout-pro/';
+		return CLDC_UPGRADE_URL;
 	}
 
 	/**

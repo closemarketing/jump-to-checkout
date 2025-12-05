@@ -92,8 +92,8 @@
 
 		// Check FREE limitation: only 1 product per link.
 		if (!cldcAdmin.is_pro && selectedProducts.length >= cldcAdmin.max_products) {
-			if (confirm(cldcAdmin.i18n.max_products_reached + '\n\nDo you want to upgrade to PRO now?')) {
-				window.open('https://close.technology/plugins/direct-link-checkout-pro/', '_blank');
+			if (confirm(cldcAdmin.i18n.max_products_reached + '\n\n' + cldcAdmin.i18n.upgrade_confirm)) {
+				window.open(cldcAdmin.upgrade_url, '_blank');
 			}
 			return;
 		}
@@ -136,7 +136,7 @@
 		}
 
 		if (selectedProducts.length === 0) {
-			tbody.innerHTML = '<tr class="no-items"><td colspan="3">No products selected.</td></tr>';
+			tbody.innerHTML = '<tr class="no-items"><td colspan="3">' + escapeHtml(cldcAdmin.i18n.no_products_label) + '</td></tr>';
 			return;
 		}
 
@@ -147,7 +147,7 @@
 			row.innerHTML = '<td class="cldc-product-name">' + escapeHtml(product.name) + '</td>' +
 				'<td>' + product.quantity + '</td>' +
 				'<td><button type="button" class="button button-small cldc-remove-product" data-index="' + 
-				index + '">Remove</button></td>';
+				index + '">' + escapeHtml(cldcAdmin.i18n.remove_button) + '</button></td>';
 			
 			tbody.appendChild(row);
 		});
@@ -213,14 +213,14 @@
 					selectedProducts.length = 0;
 					renderSelectedProducts();
 				} else {
-					alert('No link in response');
+					alert(cldcAdmin.i18n.no_link_in_response);
 				}
 			} else {
 				const errorMessage = (response.data && response.data.message) ? response.data.message : cldcAdmin.i18n.generate_error;
 				
 				// If it's a limit error and there's an upgrade URL, show upgrade option.
 				if (response.data && response.data.upgrade_url) {
-					if (confirm(errorMessage + '\n\nDo you want to upgrade to PRO now?')) {
+					if (confirm(errorMessage + '\n\n' + cldcAdmin.i18n.upgrade_confirm)) {
 						window.open(response.data.upgrade_url, '_blank');
 					}
 				} else {

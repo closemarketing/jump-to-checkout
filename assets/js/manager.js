@@ -161,7 +161,7 @@
 	 */
 	function showSuccess(button) {
 		const originalText = button.textContent;
-		button.textContent = cldcManager.i18n.copied || 'Copied!';
+		button.textContent = cldcManager.i18n.copied;
 		button.disabled = true;
 
 		setTimeout(function() {
