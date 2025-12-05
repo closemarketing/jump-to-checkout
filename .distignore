@@ -1,0 +1,24 @@
+.distignore
+.editorconfig
+.git
+.gitignore
+.DS_Store
+composer.lock
+.wordpress-org
+docs/
+changelog.md
+readme.md
+.cursor
+
+# PHP Unit
+.github
+.travis.yml
+circle.yml
+.phpcs.xml.dist
+.phpunit.result.cache
+phpunit.xml.dist
+phpcs.xml.dist
+.phpcs.xml.dist
+phpstan.neon.dist
+tests/
+bin/

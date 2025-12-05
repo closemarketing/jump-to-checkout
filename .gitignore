@@ -1,0 +1,36 @@
+# WordPress
+vendor/
+node_modules/
+
+# Numerous always-ignore extensions
+*.log
+*.zip
+.DS_Store
+
+# OS or Editor folders
+._*
+.cache
+.project
+.settings
+.tmproj
+*.esproj
+*.sublime-project
+*.sublime-workspace
+.vscode/
+.idea/
+
+# Testing
+.phpunit.result.cache
+phpunit.xml
+tests/_output/
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
