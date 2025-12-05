@@ -154,23 +154,26 @@ class Database {
 
 		$args = wp_parse_args( $args, $defaults );
 
+		// Sanitize orderby (whitelist).
+		$allowed_orderby = array( 'id', 'name', 'created_at', 'visits', 'conversions', 'status', 'expires_at' );
+		$orderby         = in_array( $args['orderby'], $allowed_orderby, true ) ? $args['orderby'] : 'created_at';
+
+		// Sanitize order.
+		$order = 'ASC' === strtoupper( $args['order'] ) ? 'ASC' : 'DESC';
+
 		$where = '1=1';
 		if ( ! empty( $args['status'] ) ) {
 			$where .= $wpdb->prepare( ' AND status = %s', $args['status'] );
 		}
 
-		$query = "SELECT * FROM {$this->table_name} 
-				  WHERE {$where} 
-				  ORDER BY {$args['orderby']} {$args['order']} 
-				  LIMIT %d OFFSET %d";
-
-		return $wpdb->get_results(
-			$wpdb->prepare(
-				$query,
-				$args['limit'],
-				$args['offset']
-			)
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, orderby/order are sanitized above.
+		$query = $wpdb->prepare(
+			"SELECT * FROM {$this->table_name} WHERE {$where} ORDER BY {$orderby} {$order} LIMIT %d OFFSET %d",
+			$args['limit'],
+			$args['offset']
 		);
+
+		return $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
 	}
 
 	/**

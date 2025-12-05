@@ -164,10 +164,12 @@ class Features {
 	 * @return void
 	 */
 	public static function show_upgrade_notice( $feature = '' ) {
-		$message = $feature 
-			? sprintf( __( 'The "%s" feature is only available in the PRO version.', 'direct-link-checkout' ), $feature )
-			: __( 'This feature is only available in the PRO version.', 'direct-link-checkout' );
-		
+		$message = $feature ? sprintf(
+			/* translators: %s is the feature name */
+			__( 'The "%s" feature is only available in the PRO version.', 'direct-link-checkout' ),
+			esc_html( $feature )
+		) : __( 'This feature is only available in the PRO version.', 'direct-link-checkout' );
+
 		echo '<div class="notice notice-warning cldc-upgrade-notice">';
 		echo '<p>' . esc_html( $message ) . ' ';
 		echo '<a href="' . esc_url( self::get_upgrade_url() ) . '" class="button button-primary" target="_blank">';

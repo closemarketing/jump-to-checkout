@@ -130,11 +130,11 @@ class LinksManager {
 					<p>
 						<strong><?php esc_html_e( 'FREE Version:', 'direct-link-checkout' ); ?></strong>
 						<?php
-						echo sprintf(
+						printf(
 							/* translators: %1$d: active links, %2$d: max links */
 							esc_html__( 'You have %1$d of %2$d active links.', 'direct-link-checkout' ),
-							Features::get_active_links_count(),
-							Features::max_links()
+							(int) Features::get_active_links_count(),
+							(int) Features::max_links()
 						);
 						?>
 						<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" target="_blank">

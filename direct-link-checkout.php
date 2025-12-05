@@ -42,8 +42,6 @@ add_action( 'plugins_loaded', 'cldc_plugin_init' );
  * @return void
  */
 function cldc_plugin_init() {
-	load_plugin_textdomain( 'direct-link-checkout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-
 	// Initialize plugin classes.
 	if ( class_exists( 'CLOSE\DirectLinkCheckout\Core\DirectCheckout' ) ) {
 		new CLOSE\DirectLinkCheckout\Core\DirectCheckout();

@@ -115,10 +115,10 @@ class AdminPanel {
 				<p>
 					<strong><?php esc_html_e( 'Limit Reached!', 'direct-link-checkout' ); ?></strong>
 					<?php
-					echo sprintf(
+					printf(
 						/* translators: %d: max links */
 						esc_html__( 'You have reached the limit of %d active links in the FREE version.', 'direct-link-checkout' ),
-						$max_links
+						(int) $max_links
 					);
 					?>
 					<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary" style="margin-left: 10px;" target="_blank">
@@ -133,11 +133,11 @@ class AdminPanel {
 				<p>
 					<strong><?php esc_html_e( 'Almost at the Limit!', 'direct-link-checkout' ); ?></strong>
 					<?php
-					echo sprintf(
+					printf(
 						/* translators: %1$d: active links, %2$d: max links */
 						esc_html__( 'You have %1$d of %2$d active links. Consider upgrading to PRO for unlimited links.', 'direct-link-checkout' ),
-						$active_links,
-						$max_links
+						(int) $active_links,
+						(int) $max_links
 					);
 					?>
 					<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" target="_blank">
@@ -204,9 +204,20 @@ class AdminPanel {
 			)
 		);
 
-		// Select2 for product search.
-		wp_enqueue_style( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), '4.1.0' );
-		wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), '4.1.0', true );
+		// Select2 for product search (local copy).
+		wp_enqueue_style(
+			'cldc-select2',
+			CLDC_PLUGIN_URL . 'vendor/select2/select2.min.css',
+			array(),
+			'4.1.0'
+		);
+		wp_enqueue_script(
+			'cldc-select2',
+			CLDC_PLUGIN_URL . 'vendor/select2/select2.min.js',
+			array( 'jquery' ),
+			'4.1.0',
+			true
+		);
 	}
 
 	/**
