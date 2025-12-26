@@ -1,11 +1,11 @@
-.jump-to-checkout-stats-container {
+.cldc-stats-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 	gap: 20px;
 	margin: 20px 0 30px 0;
 }
 
-.jump-to-checkout-stat-box {
+.cldc-stat-box {
 	background: #fff;
 	padding: 20px;
 	border: 1px solid #ccd0d4;
@@ -13,34 +13,34 @@
 	text-align: center;
 }
 
-.jump-to-checkout-stat-number {
+.cldc-stat-number {
 	font-size: 36px;
 	font-weight: 700;
 	color: #2271b1;
 	margin-bottom: 10px;
 }
 
-.jump-to-checkout-stat-label {
+.cldc-stat-label {
 	font-size: 14px;
 	color: #646970;
 }
 
-.jump-to-checkout-links-table {
+.cldc-links-table {
 	margin-top: 20px;
 }
 
-.jump-to-checkout-links-table th,
-.jump-to-checkout-links-table td {
+.cldc-links-table th,
+.cldc-links-table td {
 	padding: 12px;
 }
 
-.jump-to-checkout-link-url {
+.cldc-link-url {
 	display: flex;
 	gap: 10px;
 	margin-top: 5px;
 }
 
-.jump-to-checkout-link-input {
+.cldc-link-input {
 	flex: 1;
 	padding: 5px 8px;
 	font-size: 12px;
@@ -50,11 +50,11 @@
 	border-radius: 3px;
 }
 
-.jump-to-checkout-copy-url {
+.cldc-copy-url {
 	white-space: nowrap;
 }
 
-.jump-to-checkout-status {
+.cldc-status {
 	display: inline-block;
 	padding: 4px 10px;
 	border-radius: 3px;
@@ -62,32 +62,32 @@
 	font-weight: 600;
 }
 
-.jump-to-checkout-status-active {
+.cldc-status-active {
 	background: #d7f0db;
 	color: #00a32a;
 }
 
-.jump-to-checkout-status-inactive {
+.cldc-status-inactive {
 	background: #f0f0f1;
 	color: #646970;
 }
 
-.jump-to-checkout-expired {
+.cldc-expired {
 	color: #d63638;
 	font-weight: 600;
 	font-size: 11px;
 }
 
-.jump-to-checkout-never {
+.cldc-never {
 	color: #646970;
 	font-style: italic;
 }
 
-.jump-to-checkout-actions {
+.cldc-actions {
 	white-space: nowrap;
 }
 
-.jump-to-checkout-actions .button {
+.cldc-actions .button {
 	margin-right: 5px;
 }
 
@@ -104,15 +104,15 @@
 }
 
 @media (max-width: 782px) {
-	.jump-to-checkout-stats-container {
+	.cldc-stats-container {
 		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 	}
 	
-	.jump-to-checkout-stat-number {
+	.cldc-stat-number {
 		font-size: 28px;
 	}
 	
-	.jump-to-checkout-link-url {
+	.cldc-link-url {
 		flex-direction: column;
 	}
 }

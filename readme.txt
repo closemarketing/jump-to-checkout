@@ -1,4 +1,4 @@
-=== Jump to Checkout ===
+=== Direct Link Checkout ===
 Contributors: closemarketing, davidperez, alexbreagarcia
 Donate link: https://close.technology
 Tags: woocommerce, checkout, direct link, cart, conversion
@@ -13,7 +13,7 @@ Generate secure direct checkout links with pre-selected products for WooCommerce
 
 == Description ==
 
-**Jump to Checkout** allows you to create secure, shareable links that automatically add products to the cart and redirect customers directly to checkout. Perfect for marketing campaigns, email promotions, social media ads, and affiliate links.
+**Direct Link Checkout** allows you to create secure, shareable links that automatically add products to the cart and redirect customers directly to checkout. Perfect for marketing campaigns, email promotions, social media ads, and affiliate links.
 
 = 🚀 Key Features (FREE Version) =
 
@@ -28,7 +28,7 @@ Generate secure direct checkout links with pre-selected products for WooCommerce
 
 = 💎 PRO Features =
 
-Upgrade to **Jump to Checkout PRO** to unlock:
+Upgrade to **Direct Link Checkout PRO** to unlock:
 
 * ⭐ **Unlimited Links** - Create as many checkout links as you need
 * ⭐ **Multiple Products** - Add unlimited products to a single link
@@ -43,7 +43,7 @@ Upgrade to **Jump to Checkout PRO** to unlock:
 * ⭐ **REST API** - Integrate with external tools
 * ⭐ **Priority Support** - Fast response from our expert team
 
-[Learn more about PRO features →](https://close.technology/en/wordpress-plugins/jump-to-checkout-pro/)
+[Learn more about PRO features →](https://close.technology/en/wordpress-plugins/direct-link-checkout-pro/)
 
 = 🎯 Perfect For =
 
@@ -108,7 +108,7 @@ Clean, well-documented code following WordPress and WooCommerce coding standards
 
 1. Log in to your WordPress admin panel
 2. Go to Plugins > Add New
-3. Search for "Jump to Checkout"
+3. Search for "Direct Link Checkout"
 4. Click "Install Now" and then "Activate"
 
 = Manual Installation =
@@ -121,7 +121,7 @@ Clean, well-documented code following WordPress and WooCommerce coding standards
 
 = After Activation =
 
-1. Go to **Jump to Checkout** in your WordPress admin menu
+1. Go to **Direct Checkout** in your WordPress admin menu
 2. Click "Generate Link"
 3. Enter a name for your link (e.g., "Summer Sale 2025")
 4. Select a product and set the quantity
@@ -207,11 +207,11 @@ Yes! Free users can get support through the WordPress.org forums. PRO users rece
 == Upgrade Notice ==
 
 = 1.0.0 =
-Initial release of Jump to Checkout. Install now to start creating direct checkout links for your WooCommerce store!
+Initial release of Direct Link Checkout. Install now to start creating direct checkout links for your WooCommerce store!
 
 == Privacy Policy ==
 
-Jump to Checkout does not collect or store any personal customer data. The plugin only tracks:
+Direct Link Checkout does not collect or store any personal customer data. The plugin only tracks:
 
 * Link visit counts (anonymous)
 * Conversion counts (order completion)
@@ -230,7 +230,7 @@ This plugin does not connect to any third-party services or APIs. All functional
 
 == Support ==
 
-* **Free Support**: [WordPress.org Forums](https://wordpress.org/support/plugin/jump-to-checkout/)
-* **Documentation**: [Plugin Documentation](https://close.technology/docs/jump-to-checkout/)
+* **Free Support**: [WordPress.org Forums](https://wordpress.org/support/plugin/direct-link-checkout/)
+* **Documentation**: [Plugin Documentation](https://close.technology/docs/direct-link-checkout/)
 * **PRO Support**: Priority email support included with PRO license
 * **Website**: [close.technology](https://close.technology)
