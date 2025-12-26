@@ -17,16 +17,16 @@
 			return;
 		}
 
-		jQuery('.cldc-product-search').select2({
+		jQuery('.jump-to-checkout-product-search').select2({
 			ajax: {
-				url: cldcAdmin.ajax_url,
+				url: jptcAdmin.ajax_url,
 				dataType: 'json',
 				delay: 250,
 				data: function(params) {
 					return {
 						q: params.term,
-						action: 'cldc_search_products',
-						nonce: cldcAdmin.nonce
+						action: 'jptc_search_products',
+						nonce: jptcAdmin.nonce
 					};
 				},
 				processResults: function(data) {
@@ -37,7 +37,7 @@
 				cache: true
 			},
 			minimumInputLength: 2,
-			placeholder: cldcAdmin.i18n.search_placeholder
+			placeholder: jptcAdmin.i18n.search_placeholder
 		});
 	}
 
@@ -45,11 +45,11 @@
 	 * Initialize event listeners
 	 */
 	function initEventListeners() {
-		const addProductBtn = document.querySelector('.cldc-add-product');
-		const generateLinkBtn = document.querySelector('.cldc-generate-link');
-		const copyLinkBtn = document.querySelector('.cldc-copy-link');
-		const expiryRadios = document.querySelectorAll('input[name="cldc_expiry_type"]');
-		const expiryHoursInput = document.querySelector('input[name="cldc_expiry_hours"]');
+		const addProductBtn = document.querySelector('.jump-to-checkout-add-product');
+		const generateLinkBtn = document.querySelector('.jump-to-checkout-generate-link');
+		const copyLinkBtn = document.querySelector('.jump-to-checkout-copy-link');
+		const expiryRadios = document.querySelectorAll('input[name="jptc_expiry_type"]');
+		const expiryHoursInput = document.querySelector('input[name="jptc_expiry_hours"]');
 
 		if (addProductBtn) {
 			addProductBtn.addEventListener('click', handleAddProduct);
@@ -76,8 +76,8 @@
 	 * Handle add product
 	 */
 	function handleAddProduct() {
-		const select = document.querySelector('.cldc-product-search');
-		const quantityInput = document.querySelector('.cldc-quantity');
+		const select = document.querySelector('.jump-to-checkout-product-search');
+		const quantityInput = document.querySelector('.jump-to-checkout-quantity');
 
 		if (!select || !quantityInput) {
 			return;
@@ -86,14 +86,14 @@
 		const selectedOption = select.options[select.selectedIndex];
 		
 		if (!selectedOption || !selectedOption.value) {
-			alert(cldcAdmin.i18n.no_products);
+			alert(jptcAdmin.i18n.no_products);
 			return;
 		}
 
 		// Check FREE limitation: only 1 product per link.
-		if (!cldcAdmin.is_pro && selectedProducts.length >= cldcAdmin.max_products) {
-			if (confirm(cldcAdmin.i18n.max_products_reached + '\n\n' + cldcAdmin.i18n.upgrade_confirm)) {
-				window.open(cldcAdmin.upgrade_url, '_blank');
+		if (!jptcAdmin.is_pro && selectedProducts.length >= jptcAdmin.max_products) {
+			if (confirm(jptcAdmin.i18n.max_products_reached + '\n\n' + jptcAdmin.i18n.upgrade_confirm)) {
+				window.open(jptcAdmin.upgrade_url, '_blank');
 			}
 			return;
 		}
@@ -121,7 +121,7 @@
 		renderSelectedProducts();
 
 		// Reset select2.
-		jQuery('.cldc-product-search').val(null).trigger('change');
+		jQuery('.jump-to-checkout-product-search').val(null).trigger('change');
 		quantityInput.value = 1;
 	}
 
@@ -129,14 +129,14 @@
 	 * Render selected products table
 	 */
 	function renderSelectedProducts() {
-		const tbody = document.querySelector('.cldc-selected-products-body');
+		const tbody = document.querySelector('.jump-to-checkout-selected-products-body');
 		
 		if (!tbody) {
 			return;
 		}
 
 		if (selectedProducts.length === 0) {
-			tbody.innerHTML = '<tr class="no-items"><td colspan="3">' + escapeHtml(cldcAdmin.i18n.no_products_label) + '</td></tr>';
+			tbody.innerHTML = '<tr class="no-items"><td colspan="3">' + escapeHtml(jptcAdmin.i18n.no_products_label) + '</td></tr>';
 			return;
 		}
 
@@ -144,16 +144,16 @@
 
 		selectedProducts.forEach(function(product, index) {
 			const row = document.createElement('tr');
-			row.innerHTML = '<td class="cldc-product-name">' + escapeHtml(product.name) + '</td>' +
+			row.innerHTML = '<td class="jump-to-checkout-product-name">' + escapeHtml(product.name) + '</td>' +
 				'<td>' + product.quantity + '</td>' +
-				'<td><button type="button" class="button button-small cldc-remove-product" data-index="' + 
-				index + '">' + escapeHtml(cldcAdmin.i18n.remove_button) + '</button></td>';
+				'<td><button type="button" class="button button-small jump-to-checkout-remove-product" data-index="' + 
+				index + '">' + escapeHtml(jptcAdmin.i18n.remove_button) + '</button></td>';
 			
 			tbody.appendChild(row);
 		});
 
 		// Add event listeners to remove buttons.
-		document.querySelectorAll('.cldc-remove-product').forEach(function(btn) {
+		document.querySelectorAll('.jump-to-checkout-remove-product').forEach(function(btn) {
 			btn.addEventListener('click', function() {
 				const index = parseInt(this.getAttribute('data-index'));
 				selectedProducts.splice(index, 1);
@@ -166,21 +166,21 @@
 	 * Handle generate link
 	 */
 	function handleGenerateLink() {
-		const linkName = document.querySelector('.cldc-link-name');
+		const linkName = document.querySelector('.jump-to-checkout-link-name');
 		
 		if (!linkName || !linkName.value.trim()) {
-			alert(cldcAdmin.i18n.no_link_name);
+			alert(jptcAdmin.i18n.no_link_name);
 			linkName.focus();
 			return;
 		}
 
 		if (selectedProducts.length === 0) {
-			alert(cldcAdmin.i18n.no_products_selected);
+			alert(jptcAdmin.i18n.no_products_selected);
 			return;
 		}
 
-		const expiryType = document.querySelector('input[name="cldc_expiry_type"]:checked');
-		const expiryHours = document.querySelector('input[name="cldc_expiry_hours"]');
+		const expiryType = document.querySelector('input[name="jptc_expiry_type"]:checked');
+		const expiryHours = document.querySelector('input[name="jptc_expiry_hours"]');
 		
 		let expiry = 0;
 		if (expiryType && expiryType.value === 'custom' && expiryHours) {
@@ -188,13 +188,13 @@
 		}
 
 		const data = new FormData();
-		data.append('action', 'cldc_generate_link');
-		data.append('nonce', cldcAdmin.nonce);
+		data.append('action', 'jptc_generate_link');
+		data.append('nonce', jptcAdmin.nonce);
 		data.append('name', linkName.value.trim());
 		data.append('products', JSON.stringify(selectedProducts));
 		data.append('expiry', expiry);
 
-		fetch(cldcAdmin.ajax_url, {
+		fetch(jptcAdmin.ajax_url, {
 			method: 'POST',
 			body: data
 		})
@@ -213,14 +213,14 @@
 					selectedProducts.length = 0;
 					renderSelectedProducts();
 				} else {
-					alert(cldcAdmin.i18n.no_link_in_response);
+					alert(jptcAdmin.i18n.no_link_in_response);
 				}
 			} else {
-				const errorMessage = (response.data && response.data.message) ? response.data.message : cldcAdmin.i18n.generate_error;
+				const errorMessage = (response.data && response.data.message) ? response.data.message : jptcAdmin.i18n.generate_error;
 				
 				// If it's a limit error and there's an upgrade URL, show upgrade option.
 				if (response.data && response.data.upgrade_url) {
-					if (confirm(errorMessage + '\n\n' + cldcAdmin.i18n.upgrade_confirm)) {
+					if (confirm(errorMessage + '\n\n' + jptcAdmin.i18n.upgrade_confirm)) {
 						window.open(response.data.upgrade_url, '_blank');
 					}
 				} else {
@@ -230,7 +230,7 @@
 		})
 		.catch(function(error) {
 			console.error('Error:', error);
-			alert(cldcAdmin.i18n.generate_error);
+			alert(jptcAdmin.i18n.generate_error);
 		});
 	}
 
@@ -238,8 +238,8 @@
 	 * Display generated link
 	 */
 	function displayGeneratedLink(link) {
-		const resultSection = document.querySelector('.cldc-result-section');
-		const linkInput = document.querySelector('.cldc-generated-link');
+		const resultSection = document.querySelector('.jump-to-checkout-result-section');
+		const linkInput = document.querySelector('.jump-to-checkout-generated-link');
 
 		if (!resultSection || !linkInput) {
 			console.error('Result section elements not found');
@@ -260,7 +260,7 @@
 	 * Handle copy link
 	 */
 	function handleCopyLink() {
-		const linkInput = document.querySelector('.cldc-generated-link');
+		const linkInput = document.querySelector('.jump-to-checkout-generated-link');
 		
 		if (!linkInput) {
 			return;
@@ -277,7 +277,7 @@
 			navigator.clipboard.writeText(linkInput.value).then(function() {
 				showCopySuccess();
 			}).catch(function() {
-				alert(cldcAdmin.i18n.copy_error);
+				alert(jptcAdmin.i18n.copy_error);
 			});
 		}
 	}
@@ -286,10 +286,10 @@
 	 * Show copy success message
 	 */
 	function showCopySuccess() {
-		const copyBtn = document.querySelector('.cldc-copy-link');
+		const copyBtn = document.querySelector('.jump-to-checkout-copy-link');
 		const originalText = copyBtn.textContent;
 		
-		copyBtn.textContent = cldcAdmin.i18n.copy_success;
+		copyBtn.textContent = jptcAdmin.i18n.copy_success;
 		copyBtn.disabled = true;
 
 		setTimeout(function() {

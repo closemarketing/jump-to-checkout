@@ -4,13 +4,13 @@
  *
  * Handles database operations for direct checkout links
  *
- * @package    CLOSE\DirectLinkCheckout\Database
+ * @package    CLOSE\JumpToCheckout\Database
  * @author     Close Marketing
  * @copyright  2025 Closemarketing
  * @version    1.0.0
  */
 
-namespace CLOSE\DirectLinkCheckout\Database;
+namespace CLOSE\JumpToCheckout\Database;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -31,7 +31,7 @@ class Database {
 	 */
 	public function __construct() {
 		global $wpdb;
-		$this->table_name = $wpdb->prefix . 'cldc_links';
+		$this->table_name = $wpdb->prefix . 'jptc_links';
 	}
 
 	/**
@@ -66,7 +66,7 @@ class Database {
 		dbDelta( $sql );
 
 		// Update version.
-		update_option( 'cldc_db_version', '1.0.0' );
+		update_option( 'jptc_db_version', '1.0.0' );
 	}
 
 	/**
@@ -75,7 +75,7 @@ class Database {
 	 * @return void
 	 */
 	public function maybe_create_table() {
-		$installed_version = get_option( 'cldc_db_version' );
+		$installed_version = get_option( 'jptc_db_version' );
 
 		if ( '1.0.0' === $installed_version ) {
 			return;

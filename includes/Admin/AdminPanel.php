@@ -4,15 +4,15 @@
  *
  * Handles the admin panel for generating checkout links - FREE VERSION
  *
- * @package    CLOSE\DirectLinkCheckout\Admin
+ * @package    CLOSE\JumpToCheckout\Admin
  * @author     Close Marketing
  * @copyright  2025 Closemarketing
  * @version    1.0.0
  */
 
-namespace CLOSE\DirectLinkCheckout\Admin;
+namespace CLOSE\JumpToCheckout\Admin;
 
-use CLOSE\DirectLinkCheckout\Core\Features;
+use CLOSE\JumpToCheckout\Core\Features;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,9 +22,9 @@ defined( 'ABSPATH' ) || exit;
 class AdminPanel {
 
 	/**
-	 * Direct Checkout instance
+	 * Jump to Checkout instance
 	 *
-	 * @var \CLOSE\DirectLinkCheckout\Core\DirectCheckout
+	 * @var \CLOSE\JumpToCheckout\Core\DirectCheckout
 	 */
 	private $direct_checkout;
 
@@ -39,15 +39,15 @@ class AdminPanel {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		// Handle AJAX requests.
-		add_action( 'wp_ajax_cldc_generate_link', array( $this, 'ajax_generate_link' ) );
-		add_action( 'wp_ajax_cldc_search_products', array( $this, 'ajax_search_products' ) );
-		add_action( 'wp_ajax_cldc_dismiss_upgrade_widget', array( $this, 'ajax_dismiss_upgrade_widget' ) );
+		add_action( 'wp_ajax_jptc_generate_link', array( $this, 'ajax_generate_link' ) );
+		add_action( 'wp_ajax_jptc_search_products', array( $this, 'ajax_search_products' ) );
+		add_action( 'wp_ajax_jptc_dismiss_upgrade_widget', array( $this, 'ajax_dismiss_upgrade_widget' ) );
 
 		// Show admin notices.
 		add_action( 'admin_notices', array( $this, 'show_limit_notices' ) );
 
-		// Initialize Direct Checkout.
-		$this->direct_checkout = new \CLOSE\DirectLinkCheckout\Core\DirectCheckout();
+		// Initialize Jump to Checkout.
+		$this->direct_checkout = new \CLOSE\JumpToCheckout\Core\JumpToCheckout();
 	}
 
 	/**
@@ -58,10 +58,10 @@ class AdminPanel {
 	public function add_admin_menu() {
 		// Main menu.
 		add_menu_page(
-			__( 'Direct Checkout', 'direct-link-checkout' ),
-			__( 'Direct Checkout', 'direct-link-checkout' ),
+			__( 'Jump to Checkout', 'jump-to-checkout' ),
+			__( 'Jump to Checkout', 'jump-to-checkout' ),
 			'manage_woocommerce',
-			'cldc-direct-checkout',
+			'jptc-direct-checkout',
 			array( $this, 'render_admin_page' ),
 			'dashicons-cart',
 			56
@@ -69,22 +69,22 @@ class AdminPanel {
 
 		// Submenu: Generate Link.
 		add_submenu_page(
-			'cldc-direct-checkout',
-			__( 'Generate Link', 'direct-link-checkout' ),
-			__( 'Generate Link', 'direct-link-checkout' ),
+			'jptc-direct-checkout',
+			__( 'Generate Link', 'jump-to-checkout' ),
+			__( 'Generate Link', 'jump-to-checkout' ),
 			'manage_woocommerce',
-			'cldc-direct-checkout',
+			'jptc-direct-checkout',
 			array( $this, 'render_admin_page' )
 		);
 
 		// Submenu: Upgrade to PRO.
 		if ( ! Features::is_pro() ) {
 			add_submenu_page(
-				'cldc-direct-checkout',
-				__( '⭐ Upgrade to PRO', 'direct-link-checkout' ),
-				__( '⭐ Upgrade to PRO', 'direct-link-checkout' ),
+				'jptc-direct-checkout',
+				__( '⭐ Upgrade to PRO', 'jump-to-checkout' ),
+				__( '⭐ Upgrade to PRO', 'jump-to-checkout' ),
 				'manage_woocommerce',
-				'cldc-upgrade',
+				'jptc-upgrade',
 				array( $this, 'render_upgrade_page' )
 			);
 		}
@@ -97,7 +97,7 @@ class AdminPanel {
 	 */
 	public function show_limit_notices() {
 		$screen = get_current_screen();
-		if ( ! $screen || 'toplevel_page_cldc-direct-checkout' !== $screen->id ) {
+		if ( ! $screen || 'toplevel_page_jptc-direct-checkout' !== $screen->id ) {
 			return;
 		}
 
@@ -113,16 +113,16 @@ class AdminPanel {
 			?>
 			<div class="notice notice-error is-dismissible">
 				<p>
-					<strong><?php esc_html_e( 'Limit Reached!', 'direct-link-checkout' ); ?></strong>
+					<strong><?php esc_html_e( 'Limit Reached!', 'jump-to-checkout' ); ?></strong>
 					<?php
 					printf(
 						/* translators: %d: max links */
-						esc_html__( 'You have reached the limit of %d active links in the FREE version.', 'direct-link-checkout' ),
+						esc_html__( 'You have reached the limit of %d active links in the FREE version.', 'jump-to-checkout' ),
 						(int) $max_links
 					);
 					?>
 					<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary" style="margin-left: 10px;" target="_blank">
-						<?php esc_html_e( 'Upgrade to PRO for unlimited links', 'direct-link-checkout' ); ?>
+						<?php esc_html_e( 'Upgrade to PRO for unlimited links', 'jump-to-checkout' ); ?>
 					</a>
 				</p>
 			</div>
@@ -131,17 +131,17 @@ class AdminPanel {
 			?>
 			<div class="notice notice-warning is-dismissible">
 				<p>
-					<strong><?php esc_html_e( 'Almost at the Limit!', 'direct-link-checkout' ); ?></strong>
+					<strong><?php esc_html_e( 'Almost at the Limit!', 'jump-to-checkout' ); ?></strong>
 					<?php
 					printf(
 						/* translators: %1$d: active links, %2$d: max links */
-						esc_html__( 'You have %1$d of %2$d active links. Consider upgrading to PRO for unlimited links.', 'direct-link-checkout' ),
+						esc_html__( 'You have %1$d of %2$d active links. Consider upgrading to PRO for unlimited links.', 'jump-to-checkout' ),
 						(int) $active_links,
 						(int) $max_links
 					);
 					?>
 					<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" target="_blank">
-						<?php esc_html_e( 'View PRO plans', 'direct-link-checkout' ); ?>
+						<?php esc_html_e( 'View PRO plans', 'jump-to-checkout' ); ?>
 					</a>
 				</p>
 			</div>
@@ -156,69 +156,69 @@ class AdminPanel {
 	 * @return void
 	 */
 	public function enqueue_admin_scripts( $hook ) {
-		if ( 'toplevel_page_cldc-direct-checkout' !== $hook && 'direct-checkout_page_cldc-upgrade' !== $hook ) {
+		if ( 'toplevel_page_jptc-direct-checkout' !== $hook && 'direct-checkout_page_jptc-upgrade' !== $hook ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'cldc-admin',
-			CLDC_PLUGIN_URL . 'assets/css/admin.css',
+			'jptc-admin',
+			JTPC_PLUGIN_URL . 'assets/css/admin.css',
 			array(),
-			CLDC_VERSION
+			JTPC_VERSION
 		);
 
 		// Add FREE version styles.
 		wp_add_inline_style(
-			'cldc-admin',
+			'jptc-admin',
 			$this->get_free_version_styles()
 		);
 
 		wp_enqueue_script(
-			'cldc-admin',
-			CLDC_PLUGIN_URL . 'assets/js/admin.js',
+			'jptc-admin',
+			JTPC_PLUGIN_URL . 'assets/js/admin.js',
 			array( 'jquery' ),
-			CLDC_VERSION,
+			JTPC_VERSION,
 			true
 		);
 
 		wp_localize_script(
-			'cldc-admin',
-			'cldcAdmin',
+			'jptc-admin',
+			'jptcAdmin',
 			array(
 				'ajax_url'     => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'cldc_admin_nonce' ),
+				'nonce'        => wp_create_nonce( 'jptc_admin_nonce' ),
 				'is_pro'       => Features::is_pro(),
 				'max_links'    => Features::max_links(),
 				'max_products' => Features::max_products_per_link(),
 				'upgrade_url'  => Features::get_upgrade_url(),
 				'i18n'         => array(
-					'copy_success'         => __( 'Link copied to clipboard!', 'direct-link-checkout' ),
-					'copy_error'           => __( 'Failed to copy link.', 'direct-link-checkout' ),
-					'generate_error'       => __( 'Error generating link.', 'direct-link-checkout' ),
-					'search_placeholder'   => __( 'Search products...', 'direct-link-checkout' ),
-					'no_products'          => __( 'No products found.', 'direct-link-checkout' ),
-					'no_link_name'         => __( 'Please enter a link name.', 'direct-link-checkout' ),
-					'no_products_selected' => __( 'Please select at least one product.', 'direct-link-checkout' ),
-					'limit_reached'        => __( 'You have reached the active links limit in the FREE version.', 'direct-link-checkout' ),
-					'max_products_reached' => __( 'The FREE version allows only 1 product per link. Upgrade to PRO for multiple products.', 'direct-link-checkout' ),
-					'upgrade_confirm'      => __( 'Do you want to upgrade to PRO now?', 'direct-link-checkout' ),
-					'no_link_in_response'  => __( 'No link in response', 'direct-link-checkout' ),
-					'no_products_label'    => __( 'No products selected.', 'direct-link-checkout' ),
-					'remove_button'        => __( 'Remove', 'direct-link-checkout' ),
+					'copy_success'         => __( 'Link copied to clipboard!', 'jump-to-checkout' ),
+					'copy_error'           => __( 'Failed to copy link.', 'jump-to-checkout' ),
+					'generate_error'       => __( 'Error generating link.', 'jump-to-checkout' ),
+					'search_placeholder'   => __( 'Search products...', 'jump-to-checkout' ),
+					'no_products'          => __( 'No products found.', 'jump-to-checkout' ),
+					'no_link_name'         => __( 'Please enter a link name.', 'jump-to-checkout' ),
+					'no_products_selected' => __( 'Please select at least one product.', 'jump-to-checkout' ),
+					'limit_reached'        => __( 'You have reached the active links limit in the FREE version.', 'jump-to-checkout' ),
+					'max_products_reached' => __( 'The FREE version allows only 1 product per link. Upgrade to PRO for multiple products.', 'jump-to-checkout' ),
+					'upgrade_confirm'      => __( 'Do you want to upgrade to PRO now?', 'jump-to-checkout' ),
+					'no_link_in_response'  => __( 'No link in response', 'jump-to-checkout' ),
+					'no_products_label'    => __( 'No products selected.', 'jump-to-checkout' ),
+					'remove_button'        => __( 'Remove', 'jump-to-checkout' ),
 				),
 			)
 		);
 
 		// Select2 for product search (local copy).
 		wp_enqueue_style(
-			'cldc-select2',
-			CLDC_PLUGIN_URL . 'vendor/select2/select2/dist/css/select2.min.css',
+			'jptc-select2',
+			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/css/select2.min.css',
 			array(),
 			'4.1.0'
 		);
 		wp_enqueue_script(
-			'cldc-select2',
-			CLDC_PLUGIN_URL . 'vendor/select2/select2/dist/js/select2.min.js',
+			'jptc-select2',
+			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/js/select2.min.js',
 			array( 'jquery' ),
 			'4.1.0',
 			true
@@ -233,7 +233,7 @@ class AdminPanel {
 	private function get_free_version_styles() {
 		return "
 		/* Upgrade Widget */
-		.cldc-upgrade-widget {
+		.jump-to-checkout-upgrade-widget {
 			border-left: 4px solid #2271b1;
 			background: #f0f6fc;
 			padding: 15px 20px;
@@ -241,69 +241,69 @@ class AdminPanel {
 			position: relative;
 		}
 
-		.cldc-upgrade-content {
+		.jump-to-checkout-upgrade-content {
 			max-width: 100%;
 		}
 
-		.cldc-upgrade-header {
+		.jump-to-checkout-upgrade-header {
 			margin-bottom: 15px;
 		}
 
-		.cldc-upgrade-header h3 {
+		.jump-to-checkout-upgrade-header h3 {
 			margin: 0;
 			font-size: 18px;
 		}
 
-		.cldc-upgrade-columns {
+		.jump-to-checkout-upgrade-columns {
 			display: grid;
 			grid-template-columns: 1fr 1fr auto;
 			gap: 20px;
 			align-items: start;
 		}
 
-		.cldc-features-column ul.cldc-features-list {
+		.jump-to-checkout-features-column ul.jump-to-checkout-features-list {
 			list-style: none;
 			padding: 0;
 			margin: 0;
 		}
 
-		.cldc-features-list li {
+		.jump-to-checkout-features-list li {
 			padding: 6px 0;
 			font-size: 13px;
 			line-height: 1.4;
 		}
 
-		.cldc-cta-column {
+		.jump-to-checkout-cta-column {
 			text-align: center;
 			padding: 0 10px;
 			min-width: 180px;
 		}
 
-		.cldc-cta-column .button {
+		.jump-to-checkout-cta-column .button {
 			margin-bottom: 10px;
 			white-space: nowrap;
 		}
 
-		.cldc-guarantee {
+		.jump-to-checkout-guarantee {
 			margin: 5px 0 0 0;
 			color: #666;
 			font-size: 12px;
 		}
 
 		@media (max-width: 1200px) {
-			.cldc-upgrade-columns {
+			.jump-to-checkout-upgrade-columns {
 				grid-template-columns: 1fr;
 				gap: 15px;
 			}
 			
-			.cldc-cta-column {
+			.jump-to-checkout-cta-column {
 				border-top: 1px solid #ddd;
 				padding-top: 15px;
 			}
 		}
 
 		/* PRO Feature Badge */
-		.cldc-pro-badge {
+		.jump-to-checkout-pro-badge {
 			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 			color: white;
 			padding: 3px 8px;
@@ -315,7 +315,7 @@ class AdminPanel {
 		}
 
 		/* Product limit message */
-		.cldc-limit-message {
+		.jump-to-checkout-limit-message {
 			background: #fff3cd;
 			border-left: 4px solid #ffc107;
 			padding: 12px 20px;
@@ -323,13 +323,13 @@ class AdminPanel {
 			border-radius: 4px;
 		}
 
-		.cldc-limit-message p {
+		.jump-to-checkout-limit-message p {
 			margin: 0;
 			color: #856404;
 		}
 
 		/* Footer branding */
-		.cldc-free-footer {
+		.jump-to-checkout-free-footer {
 			margin-top: 30px;
 			padding: 20px;
 			background: #f9f9f9;
@@ -338,7 +338,7 @@ class AdminPanel {
 			text-align: center;
 		}
 
-		.cldc-free-footer p {
+		.jump-to-checkout-free-footer p {
 			margin: 0 0 10px 0;
 			color: #666;
 			font-size: 13px;
@@ -353,166 +353,166 @@ class AdminPanel {
 	 */
 	public function render_admin_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'direct-link-checkout' ) );
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'jump-to-checkout' ) );
 		}
 
 		$can_create = Features::can_create_link();
 		$max_products = Features::max_products_per_link();
 		?>
 		<div class="wrap">
-			<h1><?php echo esc_html__( 'Direct Checkout Link Generator', 'direct-link-checkout' ); ?></h1>
-			<p><?php echo esc_html__( 'Generate secure links that automatically add products to cart and redirect to checkout.', 'direct-link-checkout' ); ?></p>
+			<h1><?php echo esc_html__( 'Jump to Checkout Link Generator', 'jump-to-checkout' ); ?></h1>
+			<p><?php echo esc_html__( 'Generate secure links that automatically add products to cart and redirect to checkout.', 'jump-to-checkout' ); ?></p>
 
 			<?php if ( ! Features::is_pro() ) : ?>
 				<?php $this->render_upgrade_widget(); ?>
 			<?php endif; ?>
 
-			<div class="cldc-admin-container">
-				<div class="cldc-form-section">
-					<h2><?php echo esc_html__( 'Generate New Link', 'direct-link-checkout' ); ?></h2>
+			<div class="jump-to-checkout-admin-container">
+				<div class="jump-to-checkout-form-section">
+					<h2><?php echo esc_html__( 'Generate New Link', 'jump-to-checkout' ); ?></h2>
 
 					<?php if ( ! $can_create ) : ?>
 					<div class="notice notice-error">
 						<p>
-							<strong><?php esc_html_e( 'Limit Reached!', 'direct-link-checkout' ); ?></strong>
-							<?php esc_html_e( 'You cannot create more links in the FREE version. Please deactivate or delete an existing link, or upgrade to PRO.', 'direct-link-checkout' ); ?>
+							<strong><?php esc_html_e( 'Limit Reached!', 'jump-to-checkout' ); ?></strong>
+							<?php esc_html_e( 'You cannot create more links in the FREE version. Please deactivate or delete an existing link, or upgrade to PRO.', 'jump-to-checkout' ); ?>
 							<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary" style="margin-left: 10px;" target="_blank">
-								<?php esc_html_e( 'Upgrade to PRO', 'direct-link-checkout' ); ?>
+								<?php esc_html_e( 'Upgrade to PRO', 'jump-to-checkout' ); ?>
 							</a>
 						</p>
 					</div>
 					<?php endif; ?>
 
 					<?php if ( 1 === $max_products ) : ?>
-					<div class="cldc-limit-message">
+					<div class="jump-to-checkout-limit-message">
 						<p>
-							<strong><?php esc_html_e( 'FREE Version:', 'direct-link-checkout' ); ?></strong>
-							<?php esc_html_e( 'You can only add 1 product per link.', 'direct-link-checkout' ); ?>
+							<strong><?php esc_html_e( 'FREE Version:', 'jump-to-checkout' ); ?></strong>
+							<?php esc_html_e( 'You can only add 1 product per link.', 'jump-to-checkout' ); ?>
 							<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" target="_blank">
-								<?php esc_html_e( 'Upgrade to PRO for unlimited products', 'direct-link-checkout' ); ?>
+								<?php esc_html_e( 'Upgrade to PRO for unlimited products', 'jump-to-checkout' ); ?>
 							</a>
 						</p>
 					</div>
 					<?php endif; ?>
 
-					<div class="cldc-link-name-section">
-						<label><?php echo esc_html__( 'Link Name', 'direct-link-checkout' ); ?></label>
-						<input type="text" class="cldc-link-name" placeholder="<?php echo esc_attr__( 'e.g. Summer Campaign 2025', 'direct-link-checkout' ); ?>" <?php echo ! $can_create ? 'disabled' : ''; ?> />
-						<p class="description"><?php echo esc_html__( 'Give this link a name to identify it later in the statistics.', 'direct-link-checkout' ); ?></p>
+					<div class="jump-to-checkout-link-name-section">
+						<label><?php echo esc_html__( 'Link Name', 'jump-to-checkout' ); ?></label>
+						<input type="text" class="jump-to-checkout-link-name" placeholder="<?php echo esc_attr__( 'e.g. Summer Campaign 2025', 'jump-to-checkout' ); ?>" <?php echo ! $can_create ? 'disabled' : ''; ?> />
+						<p class="description"><?php echo esc_html__( 'Give this link a name to identify it later in the statistics.', 'jump-to-checkout' ); ?></p>
 					</div>
 
-					<h3><?php echo esc_html__( 'Select Products', 'direct-link-checkout' ); ?></h3>
+					<h3><?php echo esc_html__( 'Select Products', 'jump-to-checkout' ); ?></h3>
 
-					<div class="cldc-products-container">
-						<div class="cldc-product-row">
-							<div class="cldc-product-field">
-								<label><?php echo esc_html__( 'Product', 'direct-link-checkout' ); ?></label>
-								<select class="cldc-product-search" style="width: 100%;" <?php echo ! $can_create ? 'disabled' : ''; ?>></select>
+					<div class="jump-to-checkout-products-container">
+						<div class="jump-to-checkout-product-row">
+							<div class="jump-to-checkout-product-field">
+								<label><?php echo esc_html__( 'Product', 'jump-to-checkout' ); ?></label>
+								<select class="jump-to-checkout-product-search" style="width: 100%;" <?php echo ! $can_create ? 'disabled' : ''; ?>></select>
 							</div>
-							<div class="cldc-quantity-field">
-								<label><?php echo esc_html__( 'Quantity', 'direct-link-checkout' ); ?></label>
-								<input type="number" class="cldc-quantity" value="1" min="1" <?php echo ! $can_create ? 'disabled' : ''; ?> />
+							<div class="jump-to-checkout-quantity-field">
+								<label><?php echo esc_html__( 'Quantity', 'jump-to-checkout' ); ?></label>
+								<input type="number" class="jump-to-checkout-quantity" value="1" min="1" <?php echo ! $can_create ? 'disabled' : ''; ?> />
 							</div>
-							<div class="cldc-actions-field">
-								<button type="button" class="button cldc-add-product" <?php echo ! $can_create ? 'disabled' : ''; ?>>
-									<?php echo esc_html__( 'Add Product', 'direct-link-checkout' ); ?>
+							<div class="jump-to-checkout-actions-field">
+								<button type="button" class="button jump-to-checkout-add-product" <?php echo ! $can_create ? 'disabled' : ''; ?>>
+									<?php echo esc_html__( 'Add Product', 'jump-to-checkout' ); ?>
 								</button>
 							</div>
 						</div>
 					</div>
 
-					<div class="cldc-selected-products">
-						<h3><?php echo esc_html__( 'Selected Products', 'direct-link-checkout' ); ?></h3>
+					<div class="jump-to-checkout-selected-products">
+						<h3><?php echo esc_html__( 'Selected Products', 'jump-to-checkout' ); ?></h3>
 						<table class="wp-list-table widefat fixed striped">
 							<thead>
 								<tr>
-									<th><?php echo esc_html__( 'Product', 'direct-link-checkout' ); ?></th>
-									<th><?php echo esc_html__( 'Quantity', 'direct-link-checkout' ); ?></th>
-									<th><?php echo esc_html__( 'Actions', 'direct-link-checkout' ); ?></th>
+									<th><?php echo esc_html__( 'Product', 'jump-to-checkout' ); ?></th>
+									<th><?php echo esc_html__( 'Quantity', 'jump-to-checkout' ); ?></th>
+									<th><?php echo esc_html__( 'Actions', 'jump-to-checkout' ); ?></th>
 								</tr>
 							</thead>
-							<tbody class="cldc-selected-products-body">
+							<tbody class="jump-to-checkout-selected-products-body">
 								<tr class="no-items">
-									<td colspan="3"><?php echo esc_html__( 'No products selected.', 'direct-link-checkout' ); ?></td>
+									<td colspan="3"><?php echo esc_html__( 'No products selected.', 'jump-to-checkout' ); ?></td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 
-					<div class="cldc-expiry-section">
-						<h3><?php echo esc_html__( 'Link Expiry', 'direct-link-checkout' ); ?></h3>
+					<div class="jump-to-checkout-expiry-section">
+						<h3><?php echo esc_html__( 'Link Expiry', 'jump-to-checkout' ); ?></h3>
 						<label>
-							<input type="radio" name="cldc_expiry_type" value="never" checked <?php echo ! $can_create ? 'disabled' : ''; ?> />
-							<?php echo esc_html__( 'Never expires', 'direct-link-checkout' ); ?>
+							<input type="radio" name="jptc_expiry_type" value="never" checked <?php echo ! $can_create ? 'disabled' : ''; ?> />
+							<?php echo esc_html__( 'Never expires', 'jump-to-checkout' ); ?>
 						</label>
 						<label>
-							<input type="radio" name="cldc_expiry_type" value="custom" disabled />
-							<?php echo esc_html__( 'Expires in', 'direct-link-checkout' ); ?>
-							<input type="number" name="cldc_expiry_hours" value="24" min="1" disabled />
-							<?php echo esc_html__( 'hours', 'direct-link-checkout' ); ?>
-							<span class="cldc-pro-badge"><?php echo esc_html__( 'PRO', 'direct-link-checkout' ); ?></span>
+							<input type="radio" name="jptc_expiry_type" value="custom" disabled />
+							<?php echo esc_html__( 'Expires in', 'jump-to-checkout' ); ?>
+							<input type="number" name="jptc_expiry_hours" value="24" min="1" disabled />
+							<?php echo esc_html__( 'hours', 'jump-to-checkout' ); ?>
+							<span class="jump-to-checkout-pro-badge"><?php echo esc_html__( 'PRO', 'jump-to-checkout' ); ?></span>
 						</label>
 						<p class="description">
-							<?php esc_html_e( 'Link expiration is only available in the PRO version.', 'direct-link-checkout' ); ?>
+							<?php esc_html_e( 'Link expiration is only available in the PRO version.', 'jump-to-checkout' ); ?>
 							<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" target="_blank">
-								<?php esc_html_e( 'Learn more', 'direct-link-checkout' ); ?>
+								<?php esc_html_e( 'Learn more', 'jump-to-checkout' ); ?>
 							</a>
 						</p>
 					</div>
 
-					<div class="cldc-generate-section">
-						<button type="button" class="button button-primary button-large cldc-generate-link" <?php echo ! $can_create ? 'disabled' : ''; ?>>
-							<?php echo esc_html__( 'Generate Link', 'direct-link-checkout' ); ?>
+					<div class="jump-to-checkout-generate-section">
+						<button type="button" class="button button-primary button-large jump-to-checkout-generate-link" <?php echo ! $can_create ? 'disabled' : ''; ?>>
+							<?php echo esc_html__( 'Generate Link', 'jump-to-checkout' ); ?>
 						</button>
 					</div>
 
-					<div class="cldc-result-section" style="display: none;">
-						<h3><?php echo esc_html__( 'Generated Link', 'direct-link-checkout' ); ?></h3>
-						<div class="cldc-result-container">
-							<input type="text" class="cldc-generated-link" readonly />
-							<button type="button" class="button cldc-copy-link">
-								<?php echo esc_html__( 'Copy Link', 'direct-link-checkout' ); ?>
+					<div class="jump-to-checkout-result-section" style="display: none;">
+						<h3><?php echo esc_html__( 'Generated Link', 'jump-to-checkout' ); ?></h3>
+						<div class="jump-to-checkout-result-container">
+							<input type="text" class="jump-to-checkout-generated-link" readonly />
+							<button type="button" class="button jump-to-checkout-copy-link">
+								<?php echo esc_html__( 'Copy Link', 'jump-to-checkout' ); ?>
 							</button>
 						</div>
-						<div class="cldc-result-info">
+						<div class="jump-to-checkout-result-info">
 							<p class="description">
-								<?php echo esc_html__( 'Share this link with your customers. When they click it, the products will be added to their cart and they will be redirected to checkout.', 'direct-link-checkout' ); ?>
+								<?php echo esc_html__( 'Share this link with your customers. When they click it, the products will be added to their cart and they will be redirected to checkout.', 'jump-to-checkout' ); ?>
 							</p>
 						</div>
 					</div>
 
 					<?php if ( ! Features::is_pro() ) : ?>
-						<div class="cldc-free-footer">
-							<p><strong><?php esc_html_e( 'You are using Direct Link Checkout FREE', 'direct-link-checkout' ); ?></strong></p>
-							<p><?php esc_html_e( 'Limit: 5 active links | 1 product per link | Basic statistics', 'direct-link-checkout' ); ?></p>
+						<div class="jump-to-checkout-free-footer">
+							<p><strong><?php esc_html_e( 'You are using Jump to Checkout FREE', 'jump-to-checkout' ); ?></strong></p>
+							<p><?php esc_html_e( 'Limit: 5 active links | 1 product per link | Basic statistics', 'jump-to-checkout' ); ?></p>
 							<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary" target="_blank">
-								<?php esc_html_e( 'Unlock all features with PRO', 'direct-link-checkout' ); ?>
+								<?php esc_html_e( 'Unlock all features with PRO', 'jump-to-checkout' ); ?>
 							</a>
 						</div>
 					<?php endif; ?>
 				</div>
 
-				<div class="cldc-info-section">
-					<div class="cldc-info-box">
-						<h3><?php echo esc_html__( 'How it works', 'direct-link-checkout' ); ?></h3>
+				<div class="jump-to-checkout-info-section">
+					<div class="jump-to-checkout-info-box">
+						<h3><?php echo esc_html__( 'How it works', 'jump-to-checkout' ); ?></h3>
 						<ol>
-							<li><?php echo esc_html__( 'Select the products you want to include in the link', 'direct-link-checkout' ); ?></li>
-							<li><?php echo esc_html__( 'Set the quantity for each product', 'direct-link-checkout' ); ?></li>
-							<li><?php echo esc_html__( 'Choose if the link should expire', 'direct-link-checkout' ); ?></li>
-							<li><?php echo esc_html__( 'Click "Generate Link"', 'direct-link-checkout' ); ?></li>
-							<li><?php echo esc_html__( 'Share the link with your customers', 'direct-link-checkout' ); ?></li>
+							<li><?php echo esc_html__( 'Select the products you want to include in the link', 'jump-to-checkout' ); ?></li>
+							<li><?php echo esc_html__( 'Set the quantity for each product', 'jump-to-checkout' ); ?></li>
+							<li><?php echo esc_html__( 'Choose if the link should expire', 'jump-to-checkout' ); ?></li>
+							<li><?php echo esc_html__( 'Click "Generate Link"', 'jump-to-checkout' ); ?></li>
+							<li><?php echo esc_html__( 'Share the link with your customers', 'jump-to-checkout' ); ?></li>
 						</ol>
 					</div>
 
-					<div class="cldc-info-box">
-						<h3><?php echo esc_html__( 'Security', 'direct-link-checkout' ); ?></h3>
+					<div class="jump-to-checkout-info-box">
+						<h3><?php echo esc_html__( 'Security', 'jump-to-checkout' ); ?></h3>
 						<p>
-							<?php echo esc_html__( 'All links are secured with cryptographic signatures to prevent tampering. Each link contains encoded product information that cannot be modified without invalidating the link.', 'direct-link-checkout' ); ?>
+							<?php echo esc_html__( 'All links are secured with cryptographic signatures to prevent tampering. Each link contains encoded product information that cannot be modified without invalidating the link.', 'jump-to-checkout' ); ?>
 						</p>
 					</div>
 
-					<div class="cldc-info-box">
-						<h3><?php echo esc_html__( 'Link Format', 'direct-link-checkout' ); ?></h3>
+					<div class="jump-to-checkout-info-box">
+						<h3><?php echo esc_html__( 'Link Format', 'jump-to-checkout' ); ?></h3>
 						<p>
 							<code><?php echo esc_html( home_url( '/direct-checkout/{token}' ) ); ?></code>
 						</p>
@@ -530,41 +530,41 @@ class AdminPanel {
 	 */
 	private function render_upgrade_widget() {
 		// Check if user dismissed the widget.
-		if ( get_user_meta( get_current_user_id(), 'cldc_upgrade_widget_dismissed', true ) ) {
+		if ( get_user_meta( get_current_user_id(), 'jptc_upgrade_widget_dismissed', true ) ) {
 			return;
 		}
 		?>
-		<div class="notice notice-info is-dismissible cldc-upgrade-widget" data-dismissible="cldc-upgrade-widget">
-			<button type="button" class="notice-dismiss cldc-dismiss-upgrade">
-				<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'direct-link-checkout' ); ?></span>
+		<div class="notice notice-info is-dismissible jump-to-checkout-upgrade-widget" data-dismissible="jump-to-checkout-upgrade-widget">
+			<button type="button" class="notice-dismiss jump-to-checkout-dismiss-upgrade">
+				<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'jump-to-checkout' ); ?></span>
 			</button>
-			<div class="cldc-upgrade-content">
-				<div class="cldc-upgrade-header">
-					<h3>🚀 <?php esc_html_e( 'Unlock Full Potential with PRO', 'direct-link-checkout' ); ?></h3>
+			<div class="jump-to-checkout-upgrade-content">
+				<div class="jump-to-checkout-upgrade-header">
+					<h3>🚀 <?php esc_html_e( 'Unlock Full Potential with PRO', 'jump-to-checkout' ); ?></h3>
 				</div>
-				<div class="cldc-upgrade-columns">
-					<div class="cldc-features-column">
-						<ul class="cldc-features-list">
-							<li>✅ <?php esc_html_e( 'Unlimited links', 'direct-link-checkout' ); ?></li>
-							<li>✅ <?php esc_html_e( 'Multiple products per link', 'direct-link-checkout' ); ?></li>
-							<li>✅ <?php esc_html_e( 'Advanced analytics with charts', 'direct-link-checkout' ); ?></li>
-							<li>✅ <?php esc_html_e( 'Export to CSV/Excel', 'direct-link-checkout' ); ?></li>
+				<div class="jump-to-checkout-upgrade-columns">
+					<div class="jump-to-checkout-features-column">
+						<ul class="jump-to-checkout-features-list">
+							<li>✅ <?php esc_html_e( 'Unlimited links', 'jump-to-checkout' ); ?></li>
+							<li>✅ <?php esc_html_e( 'Multiple products per link', 'jump-to-checkout' ); ?></li>
+							<li>✅ <?php esc_html_e( 'Advanced analytics with charts', 'jump-to-checkout' ); ?></li>
+							<li>✅ <?php esc_html_e( 'Export to CSV/Excel', 'jump-to-checkout' ); ?></li>
 						</ul>
 					</div>
-					<div class="cldc-features-column">
-						<ul class="cldc-features-list">
-							<li>✅ <?php esc_html_e( 'Automatic coupons', 'direct-link-checkout' ); ?></li>
-							<li>✅ <?php esc_html_e( 'Templates & UTM tracking', 'direct-link-checkout' ); ?></li>
-							<li>✅ <?php esc_html_e( 'API & Webhooks', 'direct-link-checkout' ); ?></li>
-							<li>✅ <?php esc_html_e( 'Priority support', 'direct-link-checkout' ); ?></li>
+					<div class="jump-to-checkout-features-column">
+						<ul class="jump-to-checkout-features-list">
+							<li>✅ <?php esc_html_e( 'Automatic coupons', 'jump-to-checkout' ); ?></li>
+							<li>✅ <?php esc_html_e( 'Templates & UTM tracking', 'jump-to-checkout' ); ?></li>
+							<li>✅ <?php esc_html_e( 'API & Webhooks', 'jump-to-checkout' ); ?></li>
+							<li>✅ <?php esc_html_e( 'Priority support', 'jump-to-checkout' ); ?></li>
 						</ul>
 					</div>
-					<div class="cldc-cta-column">
+					<div class="jump-to-checkout-cta-column">
 						<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary button-large" target="_blank">
-							<?php esc_html_e( 'Upgrade to PRO', 'direct-link-checkout' ); ?>
+							<?php esc_html_e( 'Upgrade to PRO', 'jump-to-checkout' ); ?>
 						</a>
-						<p class="cldc-guarantee">
-							<small>✓ <?php esc_html_e( '30-day money back guarantee', 'direct-link-checkout' ); ?></small>
+						<p class="jump-to-checkout-guarantee">
+							<small>✓ <?php esc_html_e( '30-day money back guarantee', 'jump-to-checkout' ); ?></small>
 						</p>
 					</div>
 				</div>
@@ -572,11 +572,11 @@ class AdminPanel {
 		</div>
 		<script>
 		jQuery(document).ready(function($) {
-			$('.cldc-dismiss-upgrade').on('click', function() {
-				var $widget = $(this).closest('.cldc-upgrade-widget');
+			$('.jump-to-checkout-dismiss-upgrade').on('click', function() {
+				var $widget = $(this).closest('.jump-to-checkout-upgrade-widget');
 				$.post(ajaxurl, {
-					action: 'cldc_dismiss_upgrade_widget',
-					nonce: '<?php echo esc_js( wp_create_nonce( 'cldc_dismiss_upgrade' ) ); ?>'
+					action: 'jptc_dismiss_upgrade_widget',
+					nonce: '<?php echo esc_js( wp_create_nonce( 'jptc_dismiss_upgrade' ) ); ?>'
 				});
 				$widget.fadeOut();
 			});
@@ -592,60 +592,60 @@ class AdminPanel {
 	 */
 	public function render_upgrade_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'direct-link-checkout' ) );
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'jump-to-checkout' ) );
 		}
 
 		$comparison = Features::get_features_comparison();
 		?>
 		<div class="wrap">
-			<h1><?php echo esc_html__( 'Actualizar a Direct Link Checkout PRO', 'direct-link-checkout' ); ?></h1>
-			<p class="description"><?php echo esc_html__( 'Desbloquea todas las funciones premium y lleva tu tienda al siguiente nivel.', 'direct-link-checkout' ); ?></p>
+			<h1><?php echo esc_html__( 'Actualizar a Jump to Checkout PRO', 'jump-to-checkout' ); ?></h1>
+			<p class="description"><?php echo esc_html__( 'Desbloquea todas las funciones premium y lleva tu tienda al siguiente nivel.', 'jump-to-checkout' ); ?></p>
 
-			<div class="cldc-pricing-table">
-				<div class="cldc-pricing-column cldc-pricing-free">
+			<div class="jump-to-checkout-pricing-table">
+				<div class="jump-to-checkout-pricing-column jump-to-checkout-pricing-free">
 					<h2><?php echo esc_html( $comparison['free']['name'] ); ?></h2>
-					<div class="cldc-pricing-price"><?php echo esc_html( $comparison['free']['price'] ); ?></div>
-					<ul class="cldc-pricing-features">
+					<div class="jump-to-checkout-pricing-price"><?php echo esc_html( $comparison['free']['price'] ); ?></div>
+					<ul class="jump-to-checkout-pricing-features">
 						<?php foreach ( $comparison['free']['features'] as $feature ) : ?>
 							<li><?php echo esc_html( $feature ); ?></li>
 						<?php endforeach; ?>
 					</ul>
-					<p class="cldc-current-plan"><?php esc_html_e( 'Current plan', 'direct-link-checkout' ); ?></p>
+					<p class="jump-to-checkout-current-plan"><?php esc_html_e( 'Current plan', 'jump-to-checkout' ); ?></p>
 				</div>
 
-				<div class="cldc-pricing-column cldc-pricing-pro">
-					<div class="cldc-recommended-badge"><?php esc_html_e( 'Recommended', 'direct-link-checkout' ); ?></div>
+				<div class="jump-to-checkout-pricing-column jump-to-checkout-pricing-pro">
+					<div class="jump-to-checkout-recommended-badge"><?php esc_html_e( 'Recommended', 'jump-to-checkout' ); ?></div>
 					<h2><?php echo esc_html( $comparison['pro']['name'] ); ?></h2>
-					<div class="cldc-pricing-price"><?php echo esc_html( $comparison['pro']['price'] ); ?></div>
-					<ul class="cldc-pricing-features">
+					<div class="jump-to-checkout-pricing-price"><?php echo esc_html( $comparison['pro']['price'] ); ?></div>
+					<ul class="jump-to-checkout-pricing-features">
 						<?php foreach ( $comparison['pro']['features'] as $feature ) : ?>
 							<li><?php echo esc_html( $feature ); ?></li>
 						<?php endforeach; ?>
 					</ul>
 					<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary button-hero" target="_blank">
-						<?php esc_html_e( 'Upgrade now', 'direct-link-checkout' ); ?>
+						<?php esc_html_e( 'Upgrade now', 'jump-to-checkout' ); ?>
 					</a>
 				</div>
 			</div>
 
-			<div class="cldc-testimonials">
-				<h2><?php esc_html_e( 'Why upgrade to PRO?', 'direct-link-checkout' ); ?></h2>
-				<div class="cldc-benefits-grid">
-					<div class="cldc-benefit">
-						<h3>📈 <?php esc_html_e( 'Increase conversions', 'direct-link-checkout' ); ?></h3>
-						<p><?php esc_html_e( 'Create optimized links with multiple products and automatic coupons to maximize sales.', 'direct-link-checkout' ); ?></p>
+			<div class="jump-to-checkout-testimonials">
+				<h2><?php esc_html_e( 'Why upgrade to PRO?', 'jump-to-checkout' ); ?></h2>
+				<div class="jump-to-checkout-benefits-grid">
+					<div class="jump-to-checkout-benefit">
+						<h3>📈 <?php esc_html_e( 'Increase conversions', 'jump-to-checkout' ); ?></h3>
+						<p><?php esc_html_e( 'Create optimized links with multiple products and automatic coupons to maximize sales.', 'jump-to-checkout' ); ?></p>
 					</div>
-					<div class="cldc-benefit">
-						<h3>📊 <?php esc_html_e( 'Detailed data', 'direct-link-checkout' ); ?></h3>
-						<p><?php esc_html_e( 'Advanced analytics with charts, export and complete tracking of each link.', 'direct-link-checkout' ); ?></p>
+					<div class="jump-to-checkout-benefit">
+						<h3>📊 <?php esc_html_e( 'Detailed data', 'jump-to-checkout' ); ?></h3>
+						<p><?php esc_html_e( 'Advanced analytics with charts, export and complete tracking of each link.', 'jump-to-checkout' ); ?></p>
 					</div>
-					<div class="cldc-benefit">
-						<h3>🚀 <?php esc_html_e( 'Automation', 'direct-link-checkout' ); ?></h3>
-						<p><?php esc_html_e( 'Webhooks, REST API and integrations with your favorite tools.', 'direct-link-checkout' ); ?></p>
+					<div class="jump-to-checkout-benefit">
+						<h3>🚀 <?php esc_html_e( 'Automation', 'jump-to-checkout' ); ?></h3>
+						<p><?php esc_html_e( 'Webhooks, REST API and integrations with your favorite tools.', 'jump-to-checkout' ); ?></p>
 					</div>
-					<div class="cldc-benefit">
-						<h3>💬 <?php esc_html_e( 'Priority support', 'direct-link-checkout' ); ?></h3>
-						<p><?php esc_html_e( 'Fast response and personalized help from our expert team.', 'direct-link-checkout' ); ?></p>
+					<div class="jump-to-checkout-benefit">
+						<h3>💬 <?php esc_html_e( 'Priority support', 'jump-to-checkout' ); ?></h3>
+						<p><?php esc_html_e( 'Fast response and personalized help from our expert team.', 'jump-to-checkout' ); ?></p>
 					</div>
 				</div>
 			</div>
@@ -659,17 +659,17 @@ class AdminPanel {
 	 * @return void
 	 */
 	public function ajax_generate_link() {
-		check_ajax_referer( 'cldc_admin_nonce', 'nonce' );
+		check_ajax_referer( 'jptc_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'direct-link-checkout' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'jump-to-checkout' ) ) );
 		}
 
 		// Check if can create link (FREE limit).
 		if ( ! Features::can_create_link() ) {
 		wp_send_json_error(
 			array(
-				'message'     => __( 'You have reached the active links limit in the FREE version.', 'direct-link-checkout' ),
+				'message'     => __( 'You have reached the active links limit in the FREE version.', 'jump-to-checkout' ),
 				'upgrade_url' => Features::get_upgrade_url(),
 			)
 		);
@@ -681,18 +681,18 @@ class AdminPanel {
 		$expiry        = isset( $_POST['expiry'] ) ? absint( $_POST['expiry'] ) : 0;
 
 		if ( empty( $name ) ) {
-			wp_send_json_error( array( 'message' => __( 'Please enter a link name.', 'direct-link-checkout' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please enter a link name.', 'jump-to-checkout' ) ) );
 		}
 
 		if ( empty( $products ) ) {
-			wp_send_json_error( array( 'message' => __( 'No products selected.', 'direct-link-checkout' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No products selected.', 'jump-to-checkout' ) ) );
 		}
 
 		// FREE limit: Max 1 product per link.
 		if ( ! Features::is_pro() && count( $products ) > Features::max_products_per_link() ) {
 			wp_send_json_error(
 				array(
-					'message'     => __( 'The FREE version allows only 1 product per link. Upgrade to PRO for multiple products.', 'direct-link-checkout' ),
+					'message'     => __( 'The FREE version allows only 1 product per link. Upgrade to PRO for multiple products.', 'jump-to-checkout' ),
 					'upgrade_url' => Features::get_upgrade_url(),
 				)
 			);
@@ -701,7 +701,7 @@ class AdminPanel {
 		$result = $this->direct_checkout->generate_link( $name, $products, $expiry );
 
 		if ( ! $result || ! isset( $result['url'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Error generating link.', 'direct-link-checkout' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Error generating link.', 'jump-to-checkout' ) ) );
 		}
 
 		wp_send_json_success( array( 'link' => $result['url'] ) );
@@ -713,10 +713,10 @@ class AdminPanel {
 	 * @return void
 	 */
 	public function ajax_search_products() {
-		check_ajax_referer( 'cldc_admin_nonce', 'nonce' );
+		check_ajax_referer( 'jptc_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'direct-link-checkout' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'jump-to-checkout' ) ) );
 		}
 
 		$search = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
@@ -765,13 +765,13 @@ class AdminPanel {
 	 * @return void
 	 */
 	public function ajax_dismiss_upgrade_widget() {
-		check_ajax_referer( 'cldc_dismiss_upgrade', 'nonce' );
+		check_ajax_referer( 'jptc_dismiss_upgrade', 'nonce' );
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_send_json_error();
 		}
 
-		update_user_meta( get_current_user_id(), 'cldc_upgrade_widget_dismissed', true );
+		update_user_meta( get_current_user_id(), 'jptc_upgrade_widget_dismissed', true );
 		wp_send_json_success();
 	}
 }

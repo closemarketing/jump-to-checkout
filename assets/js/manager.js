@@ -10,17 +10,17 @@
 	 */
 	function initEventListeners() {
 		// Copy URL buttons.
-		document.querySelectorAll('.cldc-copy-url').forEach(function(btn) {
+		document.querySelectorAll('.jump-to-checkout-copy-url').forEach(function(btn) {
 			btn.addEventListener('click', handleCopyUrl);
 		});
 
 		// Delete link buttons.
-		document.querySelectorAll('.cldc-delete-link').forEach(function(btn) {
+		document.querySelectorAll('.jump-to-checkout-delete-link').forEach(function(btn) {
 			btn.addEventListener('click', handleDeleteLink);
 		});
 
 		// Toggle status buttons.
-		document.querySelectorAll('.cldc-toggle-status').forEach(function(btn) {
+		document.querySelectorAll('.jump-to-checkout-toggle-status').forEach(function(btn) {
 			btn.addEventListener('click', handleToggleStatus);
 		});
 	}
@@ -50,7 +50,7 @@
 			navigator.clipboard.writeText(url).then(function() {
 				showSuccess(e.target);
 			}).catch(function() {
-				alert(cldcManager.i18n.copy_error);
+				alert(jptcManager.i18n.copy_error);
 			});
 		}
 
@@ -67,17 +67,17 @@
 			return;
 		}
 
-		if (!confirm(cldcManager.i18n.confirm_delete)) {
+		if (!confirm(jptcManager.i18n.confirm_delete)) {
 			return;
 		}
 
 		const row = e.target.closest('tr');
 		const data = new FormData();
-		data.append('action', 'cldc_delete_link');
-		data.append('nonce', cldcManager.nonce);
+		data.append('action', 'jptc_delete_link');
+		data.append('nonce', jptcManager.nonce);
 		data.append('link_id', linkId);
 
-		fetch(cldcManager.ajax_url, {
+		fetch(jptcManager.ajax_url, {
 			method: 'POST',
 			body: data
 		})
@@ -90,19 +90,19 @@
 				setTimeout(function() {
 					row.remove();
 					// Check if table is empty.
-					const tbody = document.querySelector('.cldc-links-table tbody');
+					const tbody = document.querySelector('.jump-to-checkout-links-table tbody');
 					if (tbody && tbody.children.length === 0) {
 						tbody.innerHTML = '<tr class="no-items"><td colspan="9">' + 
-							cldcManager.i18n.no_links + '</td></tr>';
+							jptcManager.i18n.no_links + '</td></tr>';
 					}
 				}, 300);
 			} else {
-				alert(response.data.message || cldcManager.i18n.delete_error);
+				alert(response.data.message || jptcManager.i18n.delete_error);
 			}
 		})
 		.catch(function(error) {
 			console.error('Error:', error);
-			alert(cldcManager.i18n.delete_error);
+			alert(jptcManager.i18n.delete_error);
 		});
 	}
 
@@ -118,12 +118,12 @@
 		}
 
 		const data = new FormData();
-		data.append('action', 'cldc_toggle_status');
-		data.append('nonce', cldcManager.nonce);
+		data.append('action', 'jptc_toggle_status');
+		data.append('nonce', jptcManager.nonce);
 		data.append('link_id', linkId);
 		data.append('status', status);
 
-		fetch(cldcManager.ajax_url, {
+		fetch(jptcManager.ajax_url, {
 			method: 'POST',
 			body: data
 		})
@@ -135,24 +135,24 @@
 				// Update UI.
 				const newStatus = response.data.new_status;
 				const row = e.target.closest('tr');
-				const statusBadge = row.querySelector('.cldc-status');
+				const statusBadge = row.querySelector('.jump-to-checkout-status');
 				
 				// Update status badge.
-				statusBadge.className = 'cldc-status cldc-status-' + newStatus;
+				statusBadge.className = 'jump-to-checkout-status jump-to-checkout-status-' + newStatus;
 				statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
 				
 				// Update button.
 				e.target.setAttribute('data-status', newStatus);
 				e.target.textContent = newStatus === 'active' ? 
-					cldcManager.i18n.disable : 
-					cldcManager.i18n.enable;
+					jptcManager.i18n.disable : 
+					jptcManager.i18n.enable;
 			} else {
-				alert(response.data.message || cldcManager.i18n.status_error);
+				alert(response.data.message || jptcManager.i18n.status_error);
 			}
 		})
 		.catch(function(error) {
 			console.error('Error:', error);
-			alert(cldcManager.i18n.status_error);
+			alert(jptcManager.i18n.status_error);
 		});
 	}
 
@@ -161,7 +161,7 @@
 	 */
 	function showSuccess(button) {
 		const originalText = button.textContent;
-		button.textContent = cldcManager.i18n.copied;
+		button.textContent = jptcManager.i18n.copied;
 		button.disabled = true;
 
 		setTimeout(function() {
