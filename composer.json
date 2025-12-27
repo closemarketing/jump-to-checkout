@@ -1,5 +1,5 @@
 {
-	"name": "closemarketing/direct-link-checkout",
+	"name": "closemarketing/jump-to-checkout",
 	"description": "Generate direct checkout links with pre-selected products for WooCommerce",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
@@ -15,7 +15,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"CLOSE\\DirectLinkCheckout\\": "includes/"
+			"CLOSE\\JumpToCheckout\\": "includes/"
 		}
 	}
 }
