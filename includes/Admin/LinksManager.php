@@ -52,7 +52,7 @@ class LinksManager {
 	 */
 	public function add_admin_menu() {
 		add_submenu_page(
-			'jptc-direct-checkout',
+			'jptc-jump-to-checkout',
 			__( 'Manage Links', 'jump-to-checkout' ),
 			__( 'Manage Links', 'jump-to-checkout' ),
 			'manage_woocommerce',
@@ -68,7 +68,7 @@ class LinksManager {
 	 * @return void
 	 */
 	public function enqueue_admin_scripts( $hook ) {
-		if ( 'direct-checkout_page_jptc-manage-links' !== $hook ) {
+		if ( 'jump-to-checkout_page_jptc-manage-links' !== $hook ) {
 			return;
 		}
 

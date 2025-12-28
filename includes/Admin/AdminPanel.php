@@ -61,7 +61,7 @@ class AdminPanel {
 			__( 'Jump to Checkout', 'jump-to-checkout' ),
 			__( 'Jump to Checkout', 'jump-to-checkout' ),
 			'manage_woocommerce',
-			'jptc-direct-checkout',
+			'jptc-jump-to-checkout',
 			array( $this, 'render_admin_page' ),
 			'dashicons-cart',
 			56
@@ -69,18 +69,18 @@ class AdminPanel {
 
 		// Submenu: Generate Link.
 		add_submenu_page(
-			'jptc-direct-checkout',
+			'jptc-jump-to-checkout',
 			__( 'Generate Link', 'jump-to-checkout' ),
 			__( 'Generate Link', 'jump-to-checkout' ),
 			'manage_woocommerce',
-			'jptc-direct-checkout',
+			'jptc-jump-to-checkout',
 			array( $this, 'render_admin_page' )
 		);
 
 		// Submenu: Upgrade to PRO.
 		if ( ! Features::is_pro() ) {
 			add_submenu_page(
-				'jptc-direct-checkout',
+				'jptc-jump-to-checkout',
 				__( '⭐ Upgrade to PRO', 'jump-to-checkout' ),
 				__( '⭐ Upgrade to PRO', 'jump-to-checkout' ),
 				'manage_woocommerce',
@@ -97,7 +97,7 @@ class AdminPanel {
 	 */
 	public function show_limit_notices() {
 		$screen = get_current_screen();
-		if ( ! $screen || 'toplevel_page_jptc-direct-checkout' !== $screen->id ) {
+		if ( ! $screen || 'toplevel_page_jptc-jump-to-checkout' !== $screen->id ) {
 			return;
 		}
 
@@ -156,7 +156,7 @@ class AdminPanel {
 	 * @return void
 	 */
 	public function enqueue_admin_scripts( $hook ) {
-		if ( 'toplevel_page_jptc-direct-checkout' !== $hook && 'direct-checkout_page_jptc-upgrade' !== $hook ) {
+		if ( 'toplevel_page_jptc-jump-to-checkout' !== $hook && 'jump-to-checkout_page_jptc-upgrade' !== $hook && 'jump-to-checkout_page_jptc-manage-links' !== $hook ) {
 			return;
 		}
 
@@ -165,12 +165,6 @@ class AdminPanel {
 			JTPC_PLUGIN_URL . 'assets/css/admin.css',
 			array(),
 			JTPC_VERSION
-		);
-
-		// Add FREE version styles.
-		wp_add_inline_style(
-			'jptc-admin',
-			$this->get_free_version_styles()
 		);
 
 		wp_enqueue_script(
@@ -226,127 +220,6 @@ class AdminPanel {
 	}
 
 	/**
-	 * Get FREE version styles
-	 *
-	 * @return string
-	 */
-	private function get_free_version_styles() {
-		return "
-		/* Upgrade Widget */
-		.jump-to-checkout-upgrade-widget {
-			border-left: 4px solid #2271b1;
-			background: #f0f6fc;
-			padding: 15px 20px;
-			margin-bottom: 20px;
-			position: relative;
-		}
-
-		.jump-to-checkout-upgrade-content {
-			max-width: 100%;
-		}
-
-		.jump-to-checkout-upgrade-header {
-			margin-bottom: 15px;
-		}
-
-		.jump-to-checkout-upgrade-header h3 {
-			margin: 0;
-			font-size: 18px;
-		}
-
-		.jump-to-checkout-upgrade-columns {
-			display: grid;
-			grid-template-columns: 1fr 1fr auto;
-			gap: 20px;
-			align-items: start;
-		}
-
-		.jump-to-checkout-features-column ul.jump-to-checkout-features-list {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-		}
-
-		.jump-to-checkout-features-list li {
-			padding: 6px 0;
-			font-size: 13px;
-			line-height: 1.4;
-		}
-
-		.jump-to-checkout-cta-column {
-			text-align: center;
-			padding: 0 10px;
-			min-width: 180px;
-		}
-
-		.jump-to-checkout-cta-column .button {
-			margin-bottom: 10px;
-			white-space: nowrap;
-		}
-
-		.jump-to-checkout-guarantee {
-			margin: 5px 0 0 0;
-			color: #666;
-			font-size: 12px;
-		}
-
-		@media (max-width: 1200px) {
-			.jump-to-checkout-upgrade-columns {
-				grid-template-columns: 1fr;
-				gap: 15px;
-			}
-			
-			.jump-to-checkout-cta-column {
-				border-top: 1px solid #ddd;
-				padding-top: 15px;
-			}
-		}
-
-		/* PRO Feature Badge */
-		.jump-to-checkout-pro-badge {
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			color: white;
-			padding: 3px 8px;
-			border-radius: 3px;
-			font-size: 11px;
-			font-weight: bold;
-			margin-left: 8px;
-			vertical-align: middle;
-		}
-
-		/* Product limit message */
-		.jump-to-checkout-limit-message {
-			background: #fff3cd;
-			border-left: 4px solid #ffc107;
-			padding: 12px 20px;
-			margin: 15px 0;
-			border-radius: 4px;
-		}
-
-		.jump-to-checkout-limit-message p {
-			margin: 0;
-			color: #856404;
-		}
-
-		/* Footer branding */
-		.jump-to-checkout-free-footer {
-			margin-top: 30px;
-			padding: 20px;
-			background: #f9f9f9;
-			border: 1px solid #ddd;
-			border-radius: 4px;
-			text-align: center;
-		}
-
-		.jump-to-checkout-free-footer p {
-			margin: 0 0 10px 0;
-			color: #666;
-			font-size: 13px;
-		}
-		";
-	}
-
-	/**
 	 * Render admin page
 	 *
 	 * @return void
@@ -356,7 +229,7 @@ class AdminPanel {
 			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'jump-to-checkout' ) );
 		}
 
-		$can_create = Features::can_create_link();
+		$can_create   = Features::can_create_link();
 		$max_products = Features::max_products_per_link();
 		?>
 		<div class="wrap">
@@ -514,7 +387,7 @@ class AdminPanel {
 					<div class="jump-to-checkout-info-box">
 						<h3><?php echo esc_html__( 'Link Format', 'jump-to-checkout' ); ?></h3>
 						<p>
-							<code><?php echo esc_html( home_url( '/direct-checkout/{token}' ) ); ?></code>
+							<code><?php echo esc_html( home_url( '/jump-to-checkout/{token}' ) ); ?></code>
 						</p>
 					</div>
 				</div>
@@ -667,12 +540,12 @@ class AdminPanel {
 
 		// Check if can create link (FREE limit).
 		if ( ! Features::can_create_link() ) {
-		wp_send_json_error(
-			array(
-				'message'     => __( 'You have reached the active links limit in the FREE version.', 'jump-to-checkout' ),
-				'upgrade_url' => Features::get_upgrade_url(),
-			)
-		);
+			wp_send_json_error(
+				array(
+					'message'     => __( 'You have reached the active links limit in the FREE version.', 'jump-to-checkout' ),
+					'upgrade_url' => Features::get_upgrade_url(),
+				)
+			);
 		}
 
 		$name          = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';

@@ -1,6 +1,6 @@
 <?php
 /**
- * Direct Checkout Class
+ * Jump to Checkout Class
  *
  * Handles the direct checkout link functionality
  *
@@ -15,7 +15,7 @@ namespace CLOSE\JumpToCheckout\Core;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Direct Checkout Class
+ * Jump to Checkout Class
  */
 class JumpToCheckout {
 
@@ -98,7 +98,7 @@ class JumpToCheckout {
 	 */
 	public function add_rewrite_rules() {
 		add_rewrite_rule(
-			'^direct-checkout/([^/]+)/?$',
+			'^jump-to-checkout/([^/]+)/?$',
 			'index.php?jptc_token=$matches[1]',
 			'top'
 		);
@@ -133,7 +133,7 @@ class JumpToCheckout {
 		);
 
 		$token = $this->encode_token( $data );
-		$url   = home_url( '/direct-checkout/' . $token );
+		$url   = home_url( '/jump-to-checkout/' . $token );
 
 		// Save to database.
 		$expires_at = 0 !== $expiry ? gmdate( 'Y-m-d H:i:s', time() + ( $expiry * HOUR_IN_SECONDS ) ) : null;

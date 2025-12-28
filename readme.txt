@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-== Direct Link Checkout ==
-=======
 === Jump to Checkout ===
 Contributors: closemarketing, davidperez, alexbreagarcia
 Donate link: https://close.technology
@@ -65,7 +62,7 @@ All checkout links are secured with HMAC-SHA256 cryptographic signatures. Each l
 = 🌐 Link Format =
 
 Links are clean and SEO-friendly:
-`https://yoursite.com/direct-checkout/{secure-token}`
+`https://yoursite.com/jump-to-checkout/{secure-token}`
 
 = 📊 Track Performance =
 
@@ -237,4 +234,3 @@ This plugin does not connect to any third-party services or APIs. All functional
 * **Documentation**: [Plugin Documentation](https://close.technology/docs/jump-to-checkout/)
 * **PRO Support**: Priority email support included with PRO license
 * **Website**: [close.technology](https://close.technology)
->>>>>>> Stashed changes
