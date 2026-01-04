@@ -161,19 +161,30 @@ class Database {
 		// Sanitize order.
 		$order = 'ASC' === strtoupper( $args['order'] ) ? 'ASC' : 'DESC';
 
-		$where = '1=1';
+		// Build WHERE clause.
+		$where_clause = '1=1';
+		$where_values = array();
+
 		if ( ! empty( $args['status'] ) ) {
-			$where .= $wpdb->prepare( ' AND status = %s', $args['status'] );
+			$where_clause  .= ' AND status = %s';
+			$where_values[] = $args['status'];
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, orderby/order are sanitized above.
-		$query = $wpdb->prepare(
-			"SELECT * FROM {$this->table_name} WHERE {$where} ORDER BY {$orderby} {$order} LIMIT %d OFFSET %d",
-			$args['limit'],
-			$args['offset']
-		);
+		// Build base query with WHERE clause.
+		$query = "SELECT * FROM {$this->table_name} WHERE {$where_clause}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		return $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above.
+		// Add ORDER BY (sanitized via whitelist).
+		$query .= " ORDER BY {$orderby} {$order}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		// Add LIMIT and OFFSET.
+		$query        .= ' LIMIT %d OFFSET %d';
+		$where_values[] = $args['limit'];
+		$where_values[] = $args['offset'];
+
+		// Prepare the complete query.
+		$prepared_query = $wpdb->prepare( $query, $where_values ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		return $wpdb->get_results( $prepared_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**

@@ -40,22 +40,8 @@ class Features {
 			return true;
 		}
 
-		if ( self::is_pro() ) {
-			return true;
-		}
-
-		// FREE: Limit of 5 active links.
-		global $wpdb;
-		$table = $wpdb->prefix . 'jptc_links';
-		$count = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$table} WHERE status = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				'active'
-			)
-		);
-
-		$max_links = self::max_links();
-		return $count < $max_links;
+		// FREE version has no limits (WordPress.org requirement).
+		return true;
 	}
 
 	/**
@@ -64,7 +50,8 @@ class Features {
 	 * @return int
 	 */
 	public static function max_links() {
-		$max = self::is_pro() ? 999999 : 5;
+		// FREE version has no limits (WordPress.org requirement).
+		$max = 999999;
 		return apply_filters( 'jptc_max_links', $max );
 	}
 
@@ -90,7 +77,8 @@ class Features {
 	 * @return int
 	 */
 	public static function max_products_per_link() {
-		$max = self::is_pro() ? 999 : 1;
+		// FREE version has no limits (WordPress.org requirement).
+		$max = 999;
 		return apply_filters( 'jptc_max_products_per_link', $max );
 	}
 
@@ -189,8 +177,8 @@ class Features {
 				'name'     => __( 'FREE', 'jump-to-checkout' ),
 				'price'    => __( 'Free', 'jump-to-checkout' ),
 				'features' => array(
-					__( '5 active links maximum', 'jump-to-checkout' ),
-					__( '1 product per link', 'jump-to-checkout' ),
+					__( 'Unlimited links', 'jump-to-checkout' ),
+					__( 'Multiple products per link', 'jump-to-checkout' ),
 					__( 'Basic statistics', 'jump-to-checkout' ),
 					__( 'No link expiration', 'jump-to-checkout' ),
 				),

@@ -1,5 +1,5 @@
 === Jump to Checkout ===
-Contributors: closemarketing, davidperez, alexbreagarcia
+Contributors: closetechnology, closemarketing, davidperez, alexbreagarcia
 Donate link: https://close.technology
 Tags: woocommerce, checkout, direct link, cart, conversion
 Requires at least: 5.0
@@ -15,11 +15,11 @@ Generate secure direct checkout links with pre-selected products for WooCommerce
 
 **Jump to Checkout** allows you to create secure, shareable links that automatically add products to the cart and redirect customers directly to checkout. Perfect for marketing campaigns, email promotions, social media ads, and affiliate links.
 
-= 🚀 Key Features (FREE Version) =
+= 🚀 Key Features =
 
-* ✅ **5 Active Links** - Create up to 5 simultaneous checkout links
+* ✅ **Unlimited Links** - Create as many checkout links as you need
+* ✅ **Multiple Products** - Add multiple products to a single link
 * ✅ **Secure Checkout Links** - Cryptographically signed URLs prevent tampering
-* ✅ **One Product Per Link** - Add a single product with custom quantity
 * ✅ **Basic Statistics** - Track visits and conversions for each link
 * ✅ **Never Expire** - Links remain active permanently
 * ✅ **Easy Link Management** - Simple interface to create, copy, and manage links
@@ -28,19 +28,23 @@ Generate secure direct checkout links with pre-selected products for WooCommerce
 
 = 💎 PRO Features =
 
-Upgrade to **Jump to Checkout PRO** to unlock:
+Upgrade to **Jump to Checkout PRO** to unlock advanced features:
 
-* ⭐ **Unlimited Links** - Create as many checkout links as you need
-* ⭐ **Multiple Products** - Add unlimited products to a single link
-* ⭐ **Product Variations** - Support for variable products
-* ⭐ **Advanced Analytics** - Detailed dashboard with charts and trends
-* ⭐ **Data Export** - Export statistics to CSV/Excel
-* ⭐ **Automatic Coupons** - Apply discount codes automatically
-* ⭐ **Link Expiration** - Set custom expiration dates/times
-* ⭐ **Templates** - Save and reuse link configurations
-* ⭐ **UTM Tracking** - Automatic UTM parameters for campaigns
-* ⭐ **Webhooks** - Real-time notifications for conversions
-* ⭐ **REST API** - Integrate with external tools
+* ⭐ **Advanced Analytics** - Detailed dashboard with interactive charts, trends, and performance insights
+* ⭐ **Data Export** - Export statistics to CSV/Excel for external analysis
+* ⭐ **Automatic Coupons** - Apply discount codes automatically when links are clicked
+* ⭐ **Link Expiration** - Set custom expiration dates and times for time-sensitive campaigns
+* ⭐ **Templates** - Save and reuse link configurations for faster link creation
+* ⭐ **UTM Tracking** - Automatic UTM parameters for better campaign tracking in Google Analytics
+* ⭐ **Webhooks** - Real-time notifications for conversions and link events
+* ⭐ **REST API** - Full API access to create and manage links programmatically
+* ⭐ **Scheduled Links** - Schedule links to activate/deactivate automatically
+* ⭐ **Link Categories & Tags** - Organize links with categories and tags for better management
+* ⭐ **Bulk Operations** - Create multiple links from CSV and manage links in bulk
+* ⭐ **Custom Checkout Messages** - Display personalized messages on checkout per link
+* ⭐ **Email Notifications** - Get notified when links generate conversions
+* ⭐ **QR Code Generation** - Generate QR codes for your checkout links
+* ⭐ **White Label** - Remove plugin branding and customize the experience
 * ⭐ **Priority Support** - Fast response from our expert team
 
 [Learn more about PRO features →](https://close.technology/en/wordpress-plugins/jump-to-checkout-pro/)
@@ -132,15 +136,15 @@ Clean, well-documented code following WordPress and WooCommerce coding standards
 
 = How many links can I create with the free version? =
 
-The FREE version allows up to 5 active links simultaneously. You can deactivate or delete links to create new ones. For unlimited links, upgrade to PRO.
+This version has no limits! You can create unlimited links and add multiple products to each link. The PRO version adds advanced features like analytics, export, automatic coupons, templates, API access, and more.
 
 = Can I add multiple products to one link? =
 
-In the FREE version, each link can contain 1 product. The PRO version supports unlimited products per link.
+Yes! This version supports multiple products per link. You can add as many products as you need to any checkout link.
 
 = Do the links expire? =
 
-In the FREE version, links never expire. The PRO version allows you to set custom expiration dates and times.
+In this version, links never expire. The PRO version allows you to set custom expiration dates and times.
 
 = Can I track conversions from my links? =
 
@@ -178,10 +182,6 @@ The plugin only stores basic link statistics (visits and conversions). No person
 
 Statistics export is available in the PRO version (CSV/Excel format).
 
-= Do you offer support? =
-
-Yes! Free users can get support through the WordPress.org forums. PRO users receive priority email support with faster response times.
-
 == Screenshots ==
 
 1. Link Generator - Create new checkout links in seconds
@@ -196,7 +196,7 @@ Yes! Free users can get support through the WordPress.org forums. PRO users rece
 = 1.0.0 - 2025-01-09 =
 * Initial release
 * Create secure direct checkout links
-* Support for up to 5 active links (FREE)
+* Support for unlimited links (FREE)
 * Basic statistics tracking (visits and conversions)
 * Link management interface
 * Enable/disable links without deletion

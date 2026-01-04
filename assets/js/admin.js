@@ -90,13 +90,6 @@
 			return;
 		}
 
-		// Check FREE limitation: only 1 product per link.
-		if (!jptcAdmin.is_pro && selectedProducts.length >= jptcAdmin.max_products) {
-			if (confirm(jptcAdmin.i18n.max_products_reached + '\n\n' + jptcAdmin.i18n.upgrade_confirm)) {
-				window.open(jptcAdmin.upgrade_url, '_blank');
-			}
-			return;
-		}
 
 		const productId = selectedOption.value;
 		// Strip HTML tags from product name.
@@ -321,6 +314,22 @@
 		const tmp = document.createElement('div');
 		tmp.innerHTML = html;
 		return tmp.textContent || tmp.innerText || '';
+	}
+
+	/**
+	 * Handle upgrade widget dismiss
+	 */
+	if (typeof jQuery !== 'undefined') {
+		jQuery(document).ready(function($) {
+			$('.jump-to-checkout-dismiss-upgrade').on('click', function() {
+				var $widget = $(this).closest('.jump-to-checkout-upgrade-widget');
+				$.post(ajaxurl, {
+					action: 'jptc_dismiss_upgrade_widget',
+					nonce: jptcAdmin.dismissNonce
+				});
+				$widget.fadeOut();
+			});
+		});
 	}
 })();
 
