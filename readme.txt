@@ -1,5 +1,5 @@
 === Jump to Checkout ===
-Contributors: closetechnology, closemarketing, davidperez, alexbreagarcia
+Contributors: closetechnology, davidperez, alexbreagarcia
 Donate link: https://close.technology
 Tags: woocommerce, checkout, direct link, cart, conversion
 Requires at least: 5.0
@@ -30,6 +30,7 @@ Generate secure direct checkout links with pre-selected products for WooCommerce
 
 Upgrade to **Jump to Checkout PRO** to unlock advanced features:
 
+* ⭐ **Variable Products** - Support for variable products
 * ⭐ **Advanced Analytics** - Detailed dashboard with interactive charts, trends, and performance insights
 * ⭐ **Data Export** - Export statistics to CSV/Excel for external analysis
 * ⭐ **Automatic Coupons** - Apply discount codes automatically when links are clicked
@@ -96,11 +97,6 @@ Provide influencers with unique checkout links to track conversions from their a
 * WordPress 5.0 or higher
 * WooCommerce 5.0 or higher
 * PHP 7.4 or higher
-
-= 🌍 Languages =
-
-* English
-* Spanish (Español)
 
 = 👨‍💻 Developer Friendly =
 
@@ -192,6 +188,10 @@ Statistics export is available in the PRO version (CSV/Excel format).
 6. Pro Upgrade - See all available PRO features
 
 == Changelog ==
+
+= 1.0.1 - 2025-01-09 =
+* Fixed: some issues in admin area.
+* Improved: added internal test to make it more robust.
 
 = 1.0.0 - 2025-01-09 =
 * Initial release

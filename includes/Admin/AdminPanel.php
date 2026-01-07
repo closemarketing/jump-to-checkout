@@ -24,7 +24,7 @@ class AdminPanel {
 	/**
 	 * Jump to Checkout instance
 	 *
-	 * @var \CLOSE\JumpToCheckout\Core\DirectCheckout
+	 * @var \CLOSE\JumpToCheckout\Core\JumpToCheckout
 	 */
 	private $direct_checkout;
 

@@ -37,6 +37,7 @@ class Features {
 	public static function get_active_links_count() {
 		global $wpdb;
 		$table = $wpdb->prefix . 'jptc_links';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		return (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM {$table} WHERE status = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -163,4 +164,3 @@ class Features {
 		);
 	}
 }
-
