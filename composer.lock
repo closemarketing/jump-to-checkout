@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c21e6509ba9434647793d5aa93b34b8",
+    "content-hash": "f062dcc9853a6d50d66eb8d26c9fbf4e",
     "packages": [
         {
             "name": "select2/select2",

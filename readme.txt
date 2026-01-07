@@ -1,5 +1,5 @@
-=== Direct Link Checkout ===
-Contributors: closemarketing, davidperez, alexbreagarcia
+=== Jump to Checkout ===
+Contributors: closetechnology, closemarketing, davidperez, alexbreagarcia
 Donate link: https://close.technology
 Tags: woocommerce, checkout, direct link, cart, conversion
 Requires at least: 5.0
@@ -13,13 +13,13 @@ Generate secure direct checkout links with pre-selected products for WooCommerce
 
 == Description ==
 
-**Direct Link Checkout** allows you to create secure, shareable links that automatically add products to the cart and redirect customers directly to checkout. Perfect for marketing campaigns, email promotions, social media ads, and affiliate links.
+**Jump to Checkout** allows you to create secure, shareable links that automatically add products to the cart and redirect customers directly to checkout. Perfect for marketing campaigns, email promotions, social media ads, and affiliate links.
 
-= 🚀 Key Features (FREE Version) =
+= 🚀 Key Features =
 
-* ✅ **5 Active Links** - Create up to 5 simultaneous checkout links
+* ✅ **Unlimited Links** - Create as many checkout links as you need
+* ✅ **Multiple Products** - Add multiple products to a single link
 * ✅ **Secure Checkout Links** - Cryptographically signed URLs prevent tampering
-* ✅ **One Product Per Link** - Add a single product with custom quantity
 * ✅ **Basic Statistics** - Track visits and conversions for each link
 * ✅ **Never Expire** - Links remain active permanently
 * ✅ **Easy Link Management** - Simple interface to create, copy, and manage links
@@ -28,22 +28,26 @@ Generate secure direct checkout links with pre-selected products for WooCommerce
 
 = 💎 PRO Features =
 
-Upgrade to **Direct Link Checkout PRO** to unlock:
+Upgrade to **Jump to Checkout PRO** to unlock advanced features:
 
-* ⭐ **Unlimited Links** - Create as many checkout links as you need
-* ⭐ **Multiple Products** - Add unlimited products to a single link
-* ⭐ **Product Variations** - Support for variable products
-* ⭐ **Advanced Analytics** - Detailed dashboard with charts and trends
-* ⭐ **Data Export** - Export statistics to CSV/Excel
-* ⭐ **Automatic Coupons** - Apply discount codes automatically
-* ⭐ **Link Expiration** - Set custom expiration dates/times
-* ⭐ **Templates** - Save and reuse link configurations
-* ⭐ **UTM Tracking** - Automatic UTM parameters for campaigns
-* ⭐ **Webhooks** - Real-time notifications for conversions
-* ⭐ **REST API** - Integrate with external tools
+* ⭐ **Advanced Analytics** - Detailed dashboard with interactive charts, trends, and performance insights
+* ⭐ **Data Export** - Export statistics to CSV/Excel for external analysis
+* ⭐ **Automatic Coupons** - Apply discount codes automatically when links are clicked
+* ⭐ **Link Expiration** - Set custom expiration dates and times for time-sensitive campaigns
+* ⭐ **Templates** - Save and reuse link configurations for faster link creation
+* ⭐ **UTM Tracking** - Automatic UTM parameters for better campaign tracking in Google Analytics
+* ⭐ **Webhooks** - Real-time notifications for conversions and link events
+* ⭐ **REST API** - Full API access to create and manage links programmatically
+* ⭐ **Scheduled Links** - Schedule links to activate/deactivate automatically
+* ⭐ **Link Categories & Tags** - Organize links with categories and tags for better management
+* ⭐ **Bulk Operations** - Create multiple links from CSV and manage links in bulk
+* ⭐ **Custom Checkout Messages** - Display personalized messages on checkout per link
+* ⭐ **Email Notifications** - Get notified when links generate conversions
+* ⭐ **QR Code Generation** - Generate QR codes for your checkout links
+* ⭐ **White Label** - Remove plugin branding and customize the experience
 * ⭐ **Priority Support** - Fast response from our expert team
 
-[Learn more about PRO features →](https://close.technology/en/wordpress-plugins/direct-link-checkout-pro/)
+[Learn more about PRO features →](https://close.technology/en/wordpress-plugins/jump-to-checkout-pro/)
 
 = 🎯 Perfect For =
 
@@ -62,7 +66,7 @@ All checkout links are secured with HMAC-SHA256 cryptographic signatures. Each l
 = 🌐 Link Format =
 
 Links are clean and SEO-friendly:
-`https://yoursite.com/direct-checkout/{secure-token}`
+`https://yoursite.com/jump-to-checkout/{secure-token}`
 
 = 📊 Track Performance =
 
@@ -108,7 +112,7 @@ Clean, well-documented code following WordPress and WooCommerce coding standards
 
 1. Log in to your WordPress admin panel
 2. Go to Plugins > Add New
-3. Search for "Direct Link Checkout"
+3. Search for "Jump to Checkout"
 4. Click "Install Now" and then "Activate"
 
 = Manual Installation =
@@ -121,7 +125,7 @@ Clean, well-documented code following WordPress and WooCommerce coding standards
 
 = After Activation =
 
-1. Go to **Direct Checkout** in your WordPress admin menu
+1. Go to **Jump to Checkout** in your WordPress admin menu
 2. Click "Generate Link"
 3. Enter a name for your link (e.g., "Summer Sale 2025")
 4. Select a product and set the quantity
@@ -132,15 +136,15 @@ Clean, well-documented code following WordPress and WooCommerce coding standards
 
 = How many links can I create with the free version? =
 
-The FREE version allows up to 5 active links simultaneously. You can deactivate or delete links to create new ones. For unlimited links, upgrade to PRO.
+This version has no limits! You can create unlimited links and add multiple products to each link. The PRO version adds advanced features like analytics, export, automatic coupons, templates, API access, and more.
 
 = Can I add multiple products to one link? =
 
-In the FREE version, each link can contain 1 product. The PRO version supports unlimited products per link.
+Yes! This version supports multiple products per link. You can add as many products as you need to any checkout link.
 
 = Do the links expire? =
 
-In the FREE version, links never expire. The PRO version allows you to set custom expiration dates and times.
+In this version, links never expire. The PRO version allows you to set custom expiration dates and times.
 
 = Can I track conversions from my links? =
 
@@ -178,10 +182,6 @@ The plugin only stores basic link statistics (visits and conversions). No person
 
 Statistics export is available in the PRO version (CSV/Excel format).
 
-= Do you offer support? =
-
-Yes! Free users can get support through the WordPress.org forums. PRO users receive priority email support with faster response times.
-
 == Screenshots ==
 
 1. Link Generator - Create new checkout links in seconds
@@ -196,7 +196,7 @@ Yes! Free users can get support through the WordPress.org forums. PRO users rece
 = 1.0.0 - 2025-01-09 =
 * Initial release
 * Create secure direct checkout links
-* Support for up to 5 active links (FREE)
+* Support for unlimited links (FREE)
 * Basic statistics tracking (visits and conversions)
 * Link management interface
 * Enable/disable links without deletion
@@ -207,11 +207,11 @@ Yes! Free users can get support through the WordPress.org forums. PRO users rece
 == Upgrade Notice ==
 
 = 1.0.0 =
-Initial release of Direct Link Checkout. Install now to start creating direct checkout links for your WooCommerce store!
+Initial release of Jump to Checkout. Install now to start creating direct checkout links for your WooCommerce store!
 
 == Privacy Policy ==
 
-Direct Link Checkout does not collect or store any personal customer data. The plugin only tracks:
+Jump to Checkout does not collect or store any personal customer data. The plugin only tracks:
 
 * Link visit counts (anonymous)
 * Conversion counts (order completion)
@@ -230,7 +230,7 @@ This plugin does not connect to any third-party services or APIs. All functional
 
 == Support ==
 
-* **Free Support**: [WordPress.org Forums](https://wordpress.org/support/plugin/direct-link-checkout/)
-* **Documentation**: [Plugin Documentation](https://close.technology/docs/direct-link-checkout/)
+* **Free Support**: [WordPress.org Forums](https://wordpress.org/support/plugin/jump-to-checkout/)
+* **Documentation**: [Plugin Documentation](https://close.technology/docs/jump-to-checkout/)
 * **PRO Support**: Priority email support included with PRO license
 * **Website**: [close.technology](https://close.technology)

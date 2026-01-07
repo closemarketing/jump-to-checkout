@@ -1,23 +1,23 @@
 <?php
 /**
- * Direct Checkout Class
+ * Jump to Checkout Class
  *
  * Handles the direct checkout link functionality
  *
- * @package    CLOSE\DirectLinkCheckout\Core
+ * @package    CLOSE\JumpToCheckout\Core
  * @author     Close Marketing
  * @copyright  2025 Closemarketing
  * @version    1.0.0
  */
 
-namespace CLOSE\DirectLinkCheckout\Core;
+namespace CLOSE\JumpToCheckout\Core;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Direct Checkout Class
+ * Jump to Checkout Class
  */
-class DirectCheckout {
+class JumpToCheckout {
 
 	/**
 	 * Secret key for token generation
@@ -41,7 +41,7 @@ class DirectCheckout {
 		$this->secret_key = $this->get_secret_key();
 
 		// Initialize database.
-		$this->db = new \CLOSE\DirectLinkCheckout\Database\Database();
+		$this->db = new \CLOSE\JumpToCheckout\Database\Database();
 
 		// Hook to handle checkout URLs.
 		add_action( 'template_redirect', array( $this, 'handle_checkout_link' ) );
@@ -70,11 +70,11 @@ class DirectCheckout {
 	 * @return string
 	 */
 	private function get_secret_key() {
-		$key = get_option( 'cldc_secret_key' );
+		$key = get_option( 'jptc_secret_key' );
 
 		if ( ! $key ) {
 			$key = wp_generate_password( 64, true, true );
-			update_option( 'cldc_secret_key', $key );
+			update_option( 'jptc_secret_key', $key );
 		}
 
 		return $key;
@@ -87,7 +87,7 @@ class DirectCheckout {
 	 * @return array
 	 */
 	public function add_query_vars( $vars ) {
-		$vars[] = 'cldc_token';
+		$vars[] = 'jptc_token';
 		return $vars;
 	}
 
@@ -98,16 +98,16 @@ class DirectCheckout {
 	 */
 	public function add_rewrite_rules() {
 		add_rewrite_rule(
-			'^direct-checkout/([^/]+)/?$',
-			'index.php?cldc_token=$matches[1]',
+			'^jump-to-checkout/([^/]+)/?$',
+			'index.php?jptc_token=$matches[1]',
 			'top'
 		);
 
 		// Check if we need to flush rules.
-		$version = get_option( 'cldc_rewrite_version' );
-		if ( CLDC_VERSION !== $version ) {
+		$version = get_option( 'jptc_rewrite_version' );
+		if ( JTPC_VERSION !== $version ) {
 			flush_rewrite_rules();
-			update_option( 'cldc_rewrite_version', CLDC_VERSION );
+			update_option( 'jptc_rewrite_version', JTPC_VERSION );
 		}
 	}
 
@@ -116,38 +116,46 @@ class DirectCheckout {
 	 *
 	 * @param string $name Link name.
 	 * @param array  $products Array of products with product_id and quantity.
-	 * @param int    $expiry Expiry time in hours (0 for no expiry).
+	 * @param int    $expiry Expiry time in hours (0 for no expiry). Only used if PRO is active via filter.
 	 * @return array|false Array with link data or false on failure.
 	 */
 	public function generate_link( $name, $products, $expiry = 0 ) {
 		// Ensure database is initialized.
 		if ( ! $this->db ) {
-			$this->db = new \CLOSE\DirectLinkCheckout\Database\Database();
+			$this->db = new \CLOSE\JumpToCheckout\Database\Database();
 		}
 
+		// FREE version: never calculate expiry. PRO can override via filter.
+		$expiry = apply_filters( 'jptc_link_expiry', 0, $name, $products );
+
+		// Token data - FREE never includes expiry. PRO can add it via filter.
 		$data = array(
 			'products' => $products,
-			'exp'      => 0 !== $expiry ? time() + ( $expiry * HOUR_IN_SECONDS ) : 0,
-			'iss'      => 'cldc',
+			'exp'      => 0, // FREE never expires. PRO will modify this via filter.
+			'iss'      => 'jptc',
 			'iat'      => time(),
 		);
 
+		// Allow PRO to modify token data (PRO will add expiry here).
+		$data = apply_filters( 'jptc_token_data_before_encode', $data, $name, $products, $expiry );
+
 		$token = $this->encode_token( $data );
-		$url   = home_url( '/direct-checkout/' . $token );
+		$url   = home_url( '/jump-to-checkout/' . $token );
 
-		// Save to database.
-		$expires_at = 0 !== $expiry ? gmdate( 'Y-m-d H:i:s', time() + ( $expiry * HOUR_IN_SECONDS ) ) : null;
-
-		$link_id = $this->db->insert_link(
-			array(
-				'name'         => $name,
-				'token'        => $token,
-				'url'          => $url,
-				'products'     => $products,
-				'expiry_hours' => $expiry,
-				'expires_at'   => $expires_at,
-			)
+		// FREE version: never calculate expiry data. PRO will add it via filter.
+		$link_data = array(
+			'name'         => $name,
+			'token'        => $token,
+			'url'          => $url,
+			'products'     => $products,
+			'expiry_hours' => 0,
+			'expires_at'   => null,
 		);
+
+		// Allow PRO to modify link data before insert (PRO will add expiry data here).
+		$link_data = apply_filters( 'jptc_link_data_before_insert', $link_data, $name, $products, $expiry );
+
+		$link_id = $this->db->insert_link( $link_data );
 
 		if ( ! $link_id ) {
 			return false;
@@ -209,9 +217,13 @@ class DirectCheckout {
 			return false;
 		}
 
-		// Check expiry.
+		// Check expiry. PRO handles this via filter (FREE tokens never expire).
 		if ( isset( $data['exp'] ) && 0 !== $data['exp'] && $data['exp'] < time() ) {
-			return false;
+			// Allow PRO to override expiry check.
+			$is_valid = apply_filters( 'jptc_token_expiry_check', false, $data );
+			if ( ! $is_valid ) {
+				return false;
+			}
 		}
 
 		return $data;
@@ -228,7 +240,7 @@ class DirectCheckout {
 			return;
 		}
 
-		$token = get_query_var( 'cldc_token' );
+		$token = get_query_var( 'jptc_token' );
 
 		if ( empty( $token ) ) {
 			return;
@@ -236,7 +248,7 @@ class DirectCheckout {
 
 		// Ensure database is initialized.
 		if ( ! $this->db ) {
-			$this->db = new \CLOSE\DirectLinkCheckout\Database\Database();
+			$this->db = new \CLOSE\JumpToCheckout\Database\Database();
 		}
 
 		// Get link from database.
@@ -244,8 +256,8 @@ class DirectCheckout {
 
 		if ( ! $link ) {
 			wp_die(
-				esc_html__( 'Invalid checkout link.', 'direct-link-checkout' ),
-				esc_html__( 'Error', 'direct-link-checkout' ),
+				esc_html__( 'Invalid checkout link.', 'jump-to-checkout' ),
+				esc_html__( 'Error', 'jump-to-checkout' ),
 				array( 'response' => 403 )
 			);
 		}
@@ -253,17 +265,19 @@ class DirectCheckout {
 		// Check if link is active.
 		if ( 'active' !== $link->status ) {
 			wp_die(
-				esc_html__( 'This checkout link has been disabled.', 'direct-link-checkout' ),
-				esc_html__( 'Error', 'direct-link-checkout' ),
+				esc_html__( 'This checkout link has been disabled.', 'jump-to-checkout' ),
+				esc_html__( 'Error', 'jump-to-checkout' ),
 				array( 'response' => 403 )
 			);
 		}
 
-		// Check if link has expired.
-		if ( $link->expires_at && strtotime( $link->expires_at ) < time() ) {
+		// Check if link has expired. PRO handles this via filter (FREE never expires).
+		$expired = apply_filters( 'jptc_link_is_expired', false, $link );
+
+		if ( $expired ) {
 			wp_die(
-				esc_html__( 'This checkout link has expired.', 'direct-link-checkout' ),
-				esc_html__( 'Error', 'direct-link-checkout' ),
+				esc_html__( 'This checkout link has expired.', 'jump-to-checkout' ),
+				esc_html__( 'Error', 'jump-to-checkout' ),
 				array( 'response' => 403 )
 			);
 		}
@@ -273,19 +287,19 @@ class DirectCheckout {
 
 		// Store link ID in session for conversion tracking.
 		if ( WC()->session ) {
-			WC()->session->set( 'cldc_link_id', $link->id );
+			WC()->session->set( 'jptc_link_id', $link->id );
 		}
 
 		// Also store in cookie as backup.
-		$cookie_set = setcookie( 'cldc_link_id', $link->id, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		$cookie_set = setcookie( 'jptc_link_id', $link->id, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
 
 		// Decode token.
 		$data = $this->decode_token( $token );
 
 		if ( false === $data ) {
 			wp_die(
-				esc_html__( 'Invalid or expired checkout link.', 'direct-link-checkout' ),
-				esc_html__( 'Error', 'direct-link-checkout' ),
+				esc_html__( 'Invalid or expired checkout link.', 'jump-to-checkout' ),
+				esc_html__( 'Error', 'jump-to-checkout' ),
 				array( 'response' => 403 )
 			);
 		}
@@ -326,7 +340,7 @@ class DirectCheckout {
 				if ( $product_obj->managing_stock() && $product_obj->get_stock_quantity() < $quantity ) {
 					$out_of_stock[] = $product_obj->get_name() . ' (' . sprintf(
 						/* translators: %d: available stock quantity */
-						__( 'only %d available', 'direct-link-checkout' ),
+						__( 'only %d available', 'jump-to-checkout' ),
 						$product_obj->get_stock_quantity()
 					) . ')';
 					continue;
@@ -343,12 +357,12 @@ class DirectCheckout {
 
 		// If no products were added, show error.
 		if ( 0 === $added_products ) {
-			$message  = esc_html__( 'Sorry, the products in this link are not available:', 'direct-link-checkout' ) . '<br><br>';
+			$message  = esc_html__( 'Sorry, the products in this link are not available:', 'jump-to-checkout' ) . '<br><br>';
 			$message .= implode( '<br>', array_map( 'esc_html', $out_of_stock ) );
 
 			wp_die(
 				wp_kses_post( $message ),
-				esc_html__( 'Products Not Available', 'direct-link-checkout' ),
+				esc_html__( 'Products Not Available', 'jump-to-checkout' ),
 				array( 'response' => 200 )
 			);
 		}
@@ -358,7 +372,7 @@ class DirectCheckout {
 			wc_add_notice(
 				sprintf(
 					/* translators: %s: list of out of stock products */
-					__( 'Some products could not be added to your cart because they are out of stock: %s', 'direct-link-checkout' ),
+					__( 'Some products could not be added to your cart because they are out of stock: %s', 'jump-to-checkout' ),
 					implode( ', ', array_map( 'esc_html', $out_of_stock ) )
 				),
 				'notice'
@@ -385,17 +399,17 @@ class DirectCheckout {
 
 		// Try session first.
 		if ( WC()->session ) {
-			$link_id = WC()->session->get( 'cldc_link_id' );
+			$link_id = WC()->session->get( 'jptc_link_id' );
 		}
 
 		// Try cookie if session fails.
-		if ( ! $link_id && isset( $_COOKIE['cldc_link_id'] ) ) {
-			$link_id = absint( $_COOKIE['cldc_link_id'] );
+		if ( ! $link_id && isset( $_COOKIE['jptc_link_id'] ) ) {
+			$link_id = absint( $_COOKIE['jptc_link_id'] );
 		}
 
 		// Save to order meta if found.
 		if ( $link_id ) {
-			update_post_meta( $order_id, '_cldc_link_id', $link_id );
+			update_post_meta( $order_id, '_jptc_link_id', $link_id );
 		}
 	}
 
@@ -412,22 +426,22 @@ class DirectCheckout {
 
 		// Ensure database is initialized.
 		if ( ! $this->db ) {
-			$this->db = new \CLOSE\DirectLinkCheckout\Database\Database();
+			$this->db = new \CLOSE\JumpToCheckout\Database\Database();
 		}
 
 		$link_id = null;
 
 		// Try to get link ID from order meta first.
-		$link_id = get_post_meta( $order_id, '_cldc_link_id', true );
+		$link_id = get_post_meta( $order_id, '_jptc_link_id', true );
 
 		// If not in meta, try session.
 		if ( ! $link_id && WC()->session ) {
-			$link_id = WC()->session->get( 'cldc_link_id' );
+			$link_id = WC()->session->get( 'jptc_link_id' );
 		}
 
 		// If not in session, try cookie.
-		if ( ! $link_id && isset( $_COOKIE['cldc_link_id'] ) ) {
-			$link_id = absint( $_COOKIE['cldc_link_id'] );
+		if ( ! $link_id && isset( $_COOKIE['jptc_link_id'] ) ) {
+			$link_id = absint( $_COOKIE['jptc_link_id'] );
 		}
 
 		if ( ! $link_id ) {
@@ -435,10 +449,10 @@ class DirectCheckout {
 		}
 
 		// Save to order meta for future reference.
-		update_post_meta( $order_id, '_cldc_link_id', $link_id );
+		update_post_meta( $order_id, '_jptc_link_id', $link_id );
 
 		// Check if already counted (prevent duplicates).
-		$already_counted = get_post_meta( $order_id, '_cldc_conversion_counted', true );
+		$already_counted = get_post_meta( $order_id, '_jptc_conversion_counted', true );
 
 		if ( $already_counted ) {
 			return;
@@ -448,15 +462,15 @@ class DirectCheckout {
 		$result = $this->db->increment_conversions( $link_id );
 
 		// Mark as counted.
-		update_post_meta( $order_id, '_cldc_conversion_counted', '1' );
+		update_post_meta( $order_id, '_jptc_conversion_counted', '1' );
 
 		// Clear session and cookie.
 		if ( WC()->session ) {
-			WC()->session->set( 'cldc_link_id', null );
+			WC()->session->set( 'jptc_link_id', null );
 		}
 
-		if ( isset( $_COOKIE['cldc_link_id'] ) ) {
-			setcookie( 'cldc_link_id', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		if ( isset( $_COOKIE['jptc_link_id'] ) ) {
+			setcookie( 'jptc_link_id', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
 		}
 	}
 }
