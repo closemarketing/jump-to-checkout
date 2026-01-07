@@ -110,8 +110,6 @@ class AdminPanel {
 				'nonce'        => wp_create_nonce( 'jptc_admin_nonce' ),
 				'dismissNonce' => wp_create_nonce( 'jptc_dismiss_upgrade' ),
 				'is_pro'       => Features::is_pro(),
-				'max_links'    => Features::max_links(),
-				'max_products' => Features::max_products_per_link(),
 				'upgrade_url'  => Features::get_upgrade_url(),
 				'i18n'         => array(
 					'copy_success'         => __( 'Link copied to clipboard!', 'jump-to-checkout' ),
@@ -154,8 +152,6 @@ class AdminPanel {
 			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'jump-to-checkout' ) );
 		}
 
-		$can_create   = Features::can_create_link();
-		$max_products = Features::max_products_per_link();
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html__( 'Jump to Checkout Link Generator', 'jump-to-checkout' ); ?></h1>
@@ -169,33 +165,10 @@ class AdminPanel {
 				<div class="jump-to-checkout-form-section">
 					<h2><?php echo esc_html__( 'Generate New Link', 'jump-to-checkout' ); ?></h2>
 
-					<?php if ( ! $can_create ) : ?>
-					<div class="notice notice-error">
-						<p>
-							<strong><?php esc_html_e( 'Limit Reached!', 'jump-to-checkout' ); ?></strong>
-							<?php esc_html_e( 'You cannot create more links in the FREE version. Please deactivate or delete an existing link, or upgrade to PRO.', 'jump-to-checkout' ); ?>
-							<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary" style="margin-left: 10px;" target="_blank">
-								<?php esc_html_e( 'Upgrade to PRO', 'jump-to-checkout' ); ?>
-							</a>
-						</p>
-					</div>
-					<?php endif; ?>
-
-					<?php if ( 1 === $max_products ) : ?>
-					<div class="jump-to-checkout-limit-message">
-						<p>
-							<strong><?php esc_html_e( 'FREE Version:', 'jump-to-checkout' ); ?></strong>
-							<?php esc_html_e( 'You can only add 1 product per link.', 'jump-to-checkout' ); ?>
-							<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" target="_blank">
-								<?php esc_html_e( 'Upgrade to PRO for unlimited products', 'jump-to-checkout' ); ?>
-							</a>
-						</p>
-					</div>
-					<?php endif; ?>
 
 					<div class="jump-to-checkout-link-name-section">
 						<label><?php echo esc_html__( 'Link Name', 'jump-to-checkout' ); ?></label>
-						<input type="text" class="jump-to-checkout-link-name" placeholder="<?php echo esc_attr__( 'e.g. Summer Campaign 2025', 'jump-to-checkout' ); ?>" <?php echo ! $can_create ? 'disabled' : ''; ?> />
+						<input type="text" class="jump-to-checkout-link-name" placeholder="<?php echo esc_attr__( 'e.g. Summer Campaign 2025', 'jump-to-checkout' ); ?>" />
 						<p class="description"><?php echo esc_html__( 'Give this link a name to identify it later in the statistics.', 'jump-to-checkout' ); ?></p>
 					</div>
 
@@ -205,14 +178,14 @@ class AdminPanel {
 						<div class="jump-to-checkout-product-row">
 							<div class="jump-to-checkout-product-field">
 								<label><?php echo esc_html__( 'Product', 'jump-to-checkout' ); ?></label>
-								<select class="jump-to-checkout-product-search" style="width: 100%;" <?php echo ! $can_create ? 'disabled' : ''; ?>></select>
+								<select class="jump-to-checkout-product-search" style="width: 100%;"></select>
 							</div>
 							<div class="jump-to-checkout-quantity-field">
 								<label><?php echo esc_html__( 'Quantity', 'jump-to-checkout' ); ?></label>
-								<input type="number" class="jump-to-checkout-quantity" value="1" min="1" <?php echo ! $can_create ? 'disabled' : ''; ?> />
+								<input type="number" class="jump-to-checkout-quantity" value="1" min="1" />
 							</div>
 							<div class="jump-to-checkout-actions-field">
-								<button type="button" class="button jump-to-checkout-add-product" <?php echo ! $can_create ? 'disabled' : ''; ?>>
+								<button type="button" class="button jump-to-checkout-add-product">
 									<?php echo esc_html__( 'Add Product', 'jump-to-checkout' ); ?>
 								</button>
 							</div>
@@ -237,29 +210,16 @@ class AdminPanel {
 						</table>
 					</div>
 
-					<div class="jump-to-checkout-expiry-section">
-						<h3><?php echo esc_html__( 'Link Expiry', 'jump-to-checkout' ); ?></h3>
-						<label>
-							<input type="radio" name="jptc_expiry_type" value="never" checked <?php echo ! $can_create ? 'disabled' : ''; ?> />
-							<?php echo esc_html__( 'Never expires', 'jump-to-checkout' ); ?>
-						</label>
-						<label>
-							<input type="radio" name="jptc_expiry_type" value="custom" disabled />
-							<?php echo esc_html__( 'Expires in', 'jump-to-checkout' ); ?>
-							<input type="number" name="jptc_expiry_hours" value="24" min="1" disabled />
-							<?php echo esc_html__( 'hours', 'jump-to-checkout' ); ?>
-							<span class="jump-to-checkout-pro-badge"><?php echo esc_html__( 'PRO', 'jump-to-checkout' ); ?></span>
-						</label>
-						<p class="description">
-							<?php esc_html_e( 'Link expiration is only available in the PRO version.', 'jump-to-checkout' ); ?>
-							<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" target="_blank">
-								<?php esc_html_e( 'Learn more', 'jump-to-checkout' ); ?>
-							</a>
-						</p>
-					</div>
+					<?php
+					// Only show expiry section if PRO is active. PRO will render this via filter.
+					if ( Features::is_pro() ) {
+						// PRO will render expiry UI via filter.
+						do_action( 'jptc_render_expiry_section', true );
+					}
+					?>
 
 					<div class="jump-to-checkout-generate-section">
-						<button type="button" class="button button-primary button-large jump-to-checkout-generate-link" <?php echo ! $can_create ? 'disabled' : ''; ?>>
+						<button type="button" class="button button-primary button-large jump-to-checkout-generate-link">
 							<?php echo esc_html__( 'Generate Link', 'jump-to-checkout' ); ?>
 						</button>
 					</div>
@@ -440,8 +400,14 @@ class AdminPanel {
 			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'jump-to-checkout' ) ) );
 		}
 
-		$name   = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
-		$expiry = isset( $_POST['expiry'] ) ? absint( $_POST['expiry'] ) : 0;
+		$name = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+		// FREE version: always use 0 expiry. PRO can override via filter.
+		$expiry = 0;
+		if ( Features::is_pro() ) {
+			$expiry = isset( $_POST['expiry'] ) ? absint( $_POST['expiry'] ) : 0;
+		}
+		// Allow PRO to modify expiry via filter.
+		$expiry = apply_filters( 'jptc_ajax_link_expiry', $expiry, $_POST );
 
 		if ( empty( $name ) ) {
 			wp_send_json_error( array( 'message' => __( 'Please enter a link name.', 'jump-to-checkout' ) ) );

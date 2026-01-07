@@ -48,9 +48,6 @@
 		const addProductBtn = document.querySelector('.jump-to-checkout-add-product');
 		const generateLinkBtn = document.querySelector('.jump-to-checkout-generate-link');
 		const copyLinkBtn = document.querySelector('.jump-to-checkout-copy-link');
-		const expiryRadios = document.querySelectorAll('input[name="jptc_expiry_type"]');
-		const expiryHoursInput = document.querySelector('input[name="jptc_expiry_hours"]');
-
 		if (addProductBtn) {
 			addProductBtn.addEventListener('click', handleAddProduct);
 		}
@@ -63,13 +60,18 @@
 			copyLinkBtn.addEventListener('click', handleCopyLink);
 		}
 
-		expiryRadios.forEach(function(radio) {
-			radio.addEventListener('change', function() {
-				if (expiryHoursInput) {
-					expiryHoursInput.disabled = this.value !== 'custom';
-				}
+		// Expiry handling is done by PRO plugin if active.
+		const expiryRadios = document.querySelectorAll('input[name="jptc_expiry_type"]');
+		const expiryHoursInput = document.querySelector('input[name="jptc_expiry_hours"]');
+		if (expiryRadios.length > 0) {
+			expiryRadios.forEach(function(radio) {
+				radio.addEventListener('change', function() {
+					if (expiryHoursInput) {
+						expiryHoursInput.disabled = this.value !== 'custom';
+					}
+				});
 			});
-		});
+		}
 	}
 
 	/**
@@ -172,10 +174,10 @@
 			return;
 		}
 
+		// Expiry is handled by PRO plugin if active.
+		let expiry = 0;
 		const expiryType = document.querySelector('input[name="jptc_expiry_type"]:checked');
 		const expiryHours = document.querySelector('input[name="jptc_expiry_hours"]');
-		
-		let expiry = 0;
 		if (expiryType && expiryType.value === 'custom' && expiryHours) {
 			expiry = parseInt(expiryHours.value) || 0;
 		}

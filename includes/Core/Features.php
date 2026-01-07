@@ -30,32 +30,6 @@ class Features {
 	}
 
 	/**
-	 * Check if can create new link
-	 *
-	 * @return bool
-	 */
-	public static function can_create_link() {
-		// Allow PRO to override.
-		if ( apply_filters( 'jptc_can_create_link_override', false ) ) {
-			return true;
-		}
-
-		// FREE version has no limits (WordPress.org requirement).
-		return true;
-	}
-
-	/**
-	 * Get max links allowed
-	 *
-	 * @return int
-	 */
-	public static function max_links() {
-		// FREE version has no limits (WordPress.org requirement).
-		$max = 999999;
-		return apply_filters( 'jptc_max_links', $max );
-	}
-
-	/**
 	 * Get current active links count
 	 *
 	 * @return int
@@ -69,17 +43,6 @@ class Features {
 				'active'
 			)
 		);
-	}
-
-	/**
-	 * Get max products per link
-	 *
-	 * @return int
-	 */
-	public static function max_products_per_link() {
-		// FREE version has no limits (WordPress.org requirement).
-		$max = 999;
-		return apply_filters( 'jptc_max_products_per_link', $max );
 	}
 
 	/**

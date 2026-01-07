@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Jump to Checkout
  * Plugin URI:  https://close.technology/wordpress-plugins/jump-to-checkout-pro/
- * Description: Generate direct checkout links with pre-selected products for WooCommerce. FREE version limited to 5 links and 1 product per link.
+ * Description: Generate direct checkout links with pre-selected products for WooCommerce.
  * Version:     1.0.0
  * Author:      Close Marketing
  * Author URI:  https://close.marketing

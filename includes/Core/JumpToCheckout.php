@@ -116,7 +116,7 @@ class JumpToCheckout {
 	 *
 	 * @param string $name Link name.
 	 * @param array  $products Array of products with product_id and quantity.
-	 * @param int    $expiry Expiry time in hours (0 for no expiry).
+	 * @param int    $expiry Expiry time in hours (0 for no expiry). Only used if PRO is active via filter.
 	 * @return array|false Array with link data or false on failure.
 	 */
 	public function generate_link( $name, $products, $expiry = 0 ) {
@@ -125,29 +125,37 @@ class JumpToCheckout {
 			$this->db = new \CLOSE\JumpToCheckout\Database\Database();
 		}
 
+		// FREE version: never calculate expiry. PRO can override via filter.
+		$expiry = apply_filters( 'jptc_link_expiry', 0, $name, $products );
+
+		// Token data - FREE never includes expiry. PRO can add it via filter.
 		$data = array(
 			'products' => $products,
-			'exp'      => 0 !== $expiry ? time() + ( $expiry * HOUR_IN_SECONDS ) : 0,
+			'exp'      => 0, // FREE never expires. PRO will modify this via filter.
 			'iss'      => 'jptc',
 			'iat'      => time(),
 		);
 
+		// Allow PRO to modify token data (PRO will add expiry here).
+		$data = apply_filters( 'jptc_token_data_before_encode', $data, $name, $products, $expiry );
+
 		$token = $this->encode_token( $data );
 		$url   = home_url( '/jump-to-checkout/' . $token );
 
-		// Save to database.
-		$expires_at = 0 !== $expiry ? gmdate( 'Y-m-d H:i:s', time() + ( $expiry * HOUR_IN_SECONDS ) ) : null;
-
-		$link_id = $this->db->insert_link(
-			array(
-				'name'         => $name,
-				'token'        => $token,
-				'url'          => $url,
-				'products'     => $products,
-				'expiry_hours' => $expiry,
-				'expires_at'   => $expires_at,
-			)
+		// FREE version: never calculate expiry data. PRO will add it via filter.
+		$link_data = array(
+			'name'         => $name,
+			'token'        => $token,
+			'url'          => $url,
+			'products'     => $products,
+			'expiry_hours' => 0,
+			'expires_at'   => null,
 		);
+
+		// Allow PRO to modify link data before insert (PRO will add expiry data here).
+		$link_data = apply_filters( 'jptc_link_data_before_insert', $link_data, $name, $products, $expiry );
+
+		$link_id = $this->db->insert_link( $link_data );
 
 		if ( ! $link_id ) {
 			return false;
@@ -209,9 +217,13 @@ class JumpToCheckout {
 			return false;
 		}
 
-		// Check expiry.
+		// Check expiry. PRO handles this via filter (FREE tokens never expire).
 		if ( isset( $data['exp'] ) && 0 !== $data['exp'] && $data['exp'] < time() ) {
-			return false;
+			// Allow PRO to override expiry check.
+			$is_valid = apply_filters( 'jptc_token_expiry_check', false, $data );
+			if ( ! $is_valid ) {
+				return false;
+			}
 		}
 
 		return $data;
@@ -259,8 +271,10 @@ class JumpToCheckout {
 			);
 		}
 
-		// Check if link has expired.
-		if ( $link->expires_at && strtotime( $link->expires_at ) < time() ) {
+		// Check if link has expired. PRO handles this via filter (FREE never expires).
+		$expired = apply_filters( 'jptc_link_is_expired', false, $link );
+
+		if ( $expired ) {
 			wp_die(
 				esc_html__( 'This checkout link has expired.', 'jump-to-checkout' ),
 				esc_html__( 'Error', 'jump-to-checkout' ),
