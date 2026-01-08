@@ -291,7 +291,9 @@ class JumpToCheckout {
 		}
 
 		// Also store in cookie as backup.
-		$cookie_set = setcookie( 'jptc_link_id', $link->id, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		$cookie_path   = defined( 'COOKIEPATH' ) ? COOKIEPATH : '/';
+		$cookie_domain = defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '';
+		setcookie( 'jptc_link_id', $link->id, time() + DAY_IN_SECONDS, $cookie_path, $cookie_domain, is_ssl(), true );
 
 		// Decode token.
 		$data = $this->decode_token( $token );
@@ -470,7 +472,9 @@ class JumpToCheckout {
 		}
 
 		if ( isset( $_COOKIE['jptc_link_id'] ) ) {
-			setcookie( 'jptc_link_id', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+			$cookie_path   = defined( 'COOKIEPATH' ) ? COOKIEPATH : '/';
+			$cookie_domain = defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '';
+			setcookie( 'jptc_link_id', '', time() - 3600, $cookie_path, $cookie_domain, is_ssl(), true );
 		}
 	}
 }

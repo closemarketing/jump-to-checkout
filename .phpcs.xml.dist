@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards based custom ruleset for Jump to Checkout">
+	<description>Generally-applicable sniffs for WordPress plugins.</description>
+
+	<file>.</file>
+	<exclude-pattern>/tests/</exclude-pattern>
+	<exclude-pattern>/vendor/</exclude-pattern>
+	<exclude-pattern>/node_modules/</exclude-pattern>
+	<exclude-pattern>/docs/</exclude-pattern>
+
+	<arg value="sp"/> <!-- Show sniff and progress -->
+	<arg name="basepath" value="./"/><!-- Strip the file paths down to the relevant bit -->
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+	
+	<config name="testVersion" value="7.4-"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<config name="minimum_supported_wp_version" value="5.0"/>
+	<rule ref="WordPress"/>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="jptc"/>
+				<element value="JTPC"/>
+				<element value="CLOSE"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="jump-to-checkout"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.WhiteSpace.ControlStructureSpacing">
+		<properties>
+			<property name="blank_line_check" value="true"/>
+		</properties>
+	</rule>
+
+	<!-- Allow direct database queries in Database class -->
+	<rule ref="WordPress.DB.DirectDatabaseQuery">
+		<exclude-pattern>*/Database/Database.php</exclude-pattern>
+	</rule>
+
+	<!-- Allow table name interpolation in Database class (we use $wpdb->prepare for values) -->
+	<rule ref="WordPress.DB.PreparedSQL.InterpolatedNotPrepared">
+		<exclude-pattern>*/Database/Database.php</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.DB.PreparedSQL.NotPrepared">
+		<exclude-pattern>*/Database/Database.php</exclude-pattern>
+	</rule>
+
+	<!-- Add WooCommerce custom capabilities -->
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="manage_woocommerce"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Allow class filenames with hyphens and PSR-4 naming -->
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="strict_class_file_names" value="false"/>
+		</properties>
+		<!-- Exclude includes directory to allow PSR-4 naming (PascalCase) -->
+		<exclude-pattern>*/includes/*.php</exclude-pattern>
+	</rule>
+</ruleset>
+

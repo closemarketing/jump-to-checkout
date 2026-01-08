@@ -125,25 +125,6 @@ class LinksManager {
 		<div class="wrap">
 			<h1><?php echo esc_html__( 'Manage Jump to Checkout Links', 'jump-to-checkout' ); ?></h1>
 
-			<?php if ( ! Features::is_pro() ) : ?>
-				<div class="notice notice-info">
-					<p>
-						<strong><?php esc_html_e( 'FREE Version:', 'jump-to-checkout' ); ?></strong>
-						<?php
-						printf(
-							/* translators: %1$d: active links, %2$d: max links */
-							esc_html__( 'You have %1$d of %2$d active links.', 'jump-to-checkout' ),
-							(int) Features::get_active_links_count(),
-							(int) Features::max_links()
-						);
-						?>
-						<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" target="_blank">
-							<?php esc_html_e( 'Upgrade to PRO for unlimited links', 'jump-to-checkout' ); ?>
-						</a>
-					</p>
-				</div>
-			<?php endif; ?>
-
 			<div class="jump-to-checkout-stats-container">
 				<div class="jump-to-checkout-stat-box">
 					<div class="jump-to-checkout-stat-number"><?php echo esc_html( $statistics->total_links ); ?></div>
@@ -323,18 +304,6 @@ class LinksManager {
 		}
 
 		$new_status = 'active' === $status ? 'inactive' : 'active';
-
-		// Check FREE limits when activating.
-		if ( 'active' === $new_status && ! Features::is_pro() ) {
-			if ( ! Features::can_create_link() ) {
-				wp_send_json_error(
-					array(
-						'message'     => __( 'You cannot activate more links. You have reached the limit of 5 active links in the FREE version.', 'jump-to-checkout' ),
-						'upgrade_url' => Features::get_upgrade_url(),
-					)
-				);
-			}
-		}
 
 		$result = $this->db->update_status( $link_id, $new_status );
 

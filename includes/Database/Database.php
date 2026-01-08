@@ -177,7 +177,7 @@ class Database {
 		$query .= " ORDER BY {$orderby} {$order}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		// Add LIMIT and OFFSET.
-		$query        .= ' LIMIT %d OFFSET %d';
+		$query         .= ' LIMIT %d OFFSET %d';
 		$where_values[] = $args['limit'];
 		$where_values[] = $args['offset'];
 
