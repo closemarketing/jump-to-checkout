@@ -5,7 +5,7 @@ Tags: woocommerce, checkout, direct link, cart, conversion
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -189,11 +189,11 @@ Statistics export is available in the PRO version (CSV/Excel format).
 
 == Changelog ==
 
-= 1.0.1 - 2025-01-09 =
+= 1.0.1 =
 * Fixed: some issues in admin area.
 * Improved: added internal test to make it more robust.
 
-= 1.0.0 - 2025-01-09 =
+= 1.0.0 =
 * Initial release
 * Create secure direct checkout links
 * Support for unlimited links (FREE)
