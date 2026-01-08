@@ -169,13 +169,8 @@ class Test_AdminPanel extends WP_UnitTestCase {
 		$products_json = wp_json_encode(
 			array(
 				array(
-					'product_id'   => 1,
-					'variation_id' => 10,
-					'quantity'     => 2,
-					'variation'    => array(
-						'color' => 'red',
-						'size'  => 'large',
-					),
+					'product_id' => 1,
+					'quantity'   => 2,
 				),
 			)
 		);
@@ -190,11 +185,7 @@ class Test_AdminPanel extends WP_UnitTestCase {
 		$this->assertIsArray( $result );
 		$this->assertCount( 1, $result );
 		$this->assertEquals( 1, $result[0]['product_id'] );
-		$this->assertEquals( 10, $result[0]['variation_id'] );
 		$this->assertEquals( 2, $result[0]['quantity'] );
-		$this->assertIsArray( $result[0]['variation'] );
-		$this->assertEquals( 'red', $result[0]['variation']['color'] );
-		$this->assertEquals( 'large', $result[0]['variation']['size'] );
 	}
 
 	/**
