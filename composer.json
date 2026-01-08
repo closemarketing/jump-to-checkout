@@ -36,8 +36,7 @@
 		"phpstan/phpstan": "^2.1",
 		"szepeviktor/phpstan-wordpress": "^2.0",
 		"phpstan/extension-installer": "^1.4",
-		"wp-phpunit/wp-phpunit": "^6.3",
-		"overtrue/phplint": "^9.0"
+		"wp-phpunit/wp-phpunit": "^6.3"
 	},
 	"autoload": {
 		"psr-4": {
@@ -47,7 +46,7 @@
 	"scripts": {
 		"format": "phpcbf --standard=.phpcs.xml.dist",
 		"lint": "phpcs --standard=.phpcs.xml.dist",
-		"phplint": "phplint . --exclude=vendor --exclude=node_modules",
+		"phplint": "find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -not -path './.git/*' -exec php -l {} \\;",
 		"phpstan": "phpstan analyse --memory-limit=2048M",
 		"test": "phpunit",
 		"test-debug": "XDEBUG_MODE=debug XDEBUG_TRIGGER=1 phpunit",
