@@ -98,19 +98,42 @@
 		const productName = stripHtml(selectedOption.text);
 		const quantity = parseInt(quantityInput.value) || 1;
 
-		// Check if product already exists.
+		// Check if PRO variable products handler is available and get variation data.
+		let variationData = null;
+		if (typeof window.jptcGetSelectedVariation === 'function') {
+			variationData = window.jptcGetSelectedVariation();
+		}
+
+		// Build product data.
+		const productData = {
+			product_id: productId,
+			name: productName,
+			quantity: quantity
+		};
+
+		// Add variation data if available (PRO feature).
+		if (variationData && variationData.variation_id) {
+			productData.variation_id = variationData.variation_id;
+			productData.variation = variationData.variation;
+			// Update name to include variation attributes.
+			if (variationData.variation) {
+				const variationAttrs = Object.values(variationData.variation).join(' - ');
+				productData.name = productName + ' (' + variationAttrs + ')';
+			}
+		}
+
+		// Check if product already exists (check by variation_id if it's a variation).
 		const existingIndex = selectedProducts.findIndex(function(p) {
+			if (variationData && variationData.variation_id) {
+				return p.variation_id === variationData.variation_id;
+			}
 			return p.product_id === productId;
 		});
 
 		if (existingIndex !== -1) {
-			selectedProducts[existingIndex].quantity = quantity;
+			selectedProducts[existingIndex] = productData;
 		} else {
-			selectedProducts.push({
-				product_id: productId,
-				name: productName,
-				quantity: quantity
-			});
+			selectedProducts.push(productData);
 		}
 
 		renderSelectedProducts();
@@ -182,12 +205,22 @@
 			expiry = parseInt(expiryHours.value) || 0;
 		}
 
+		// Get coupon code if PRO is active.
+		let couponCode = '';
+		const couponSelect = document.querySelector('select[name="jptc_coupon_code"]');
+		if (couponSelect) {
+			couponCode = couponSelect.value || '';
+		}
+
 		const data = new FormData();
 		data.append('action', 'jptc_generate_link');
 		data.append('nonce', jptcAdmin.nonce);
 		data.append('name', linkName.value.trim());
 		data.append('products', JSON.stringify(selectedProducts));
 		data.append('expiry', expiry);
+		if (couponCode) {
+			data.append('coupon_code', couponCode);
+		}
 
 		fetch(jptcAdmin.ajax_url, {
 			method: 'POST',

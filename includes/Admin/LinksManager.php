@@ -59,6 +59,17 @@ class LinksManager {
 			'jptc-manage-links',
 			array( $this, 'render_admin_page' )
 		);
+
+		if ( Features::is_pro() ) {
+			add_submenu_page(
+				'jptc-jump-to-checkout',
+				__( 'Settings', 'jump-to-checkout' ),
+				__( 'Settings', 'jump-to-checkout' ),
+				'manage_woocommerce',
+				'jptc-settings',
+				array( $this, 'render_settings_page' )
+			);
+		}
 	}
 
 	/**
@@ -156,7 +167,14 @@ class LinksManager {
 				</div>
 			</div>
 
-			<?php if ( ! Features::is_pro() && ! Features::can_export() ) : ?>
+			<div class="jump-to-checkout-actions-bar" style="margin: 20px 0;">
+				<?php
+				// Allow PRO to add export button.
+				do_action( 'jptc_admin_export_button' );
+				?>
+			</div>
+
+			<?php if ( ! Features::is_pro() ) : ?>
 				<div class="jump-to-checkout-upgrade-banner" style="background: #f0f6fc; border-left: 4px solid #2271b1; padding: 15px; margin: 20px 0; border-radius: 4px;">
 					<p style="margin: 0;">
 						<strong>📊 <?php esc_html_e( 'Need to export this data?', 'jump-to-checkout' ); ?></strong>
@@ -312,6 +330,64 @@ class LinksManager {
 		} else {
 			wp_send_json_error( array( 'message' => __( 'Error updating status.', 'jump-to-checkout' ) ) );
 		}
+	}
+
+	/**
+	 * Render settings page
+	 *
+	 * @return void
+	 */
+	public function render_settings_page() {
+		if ( ! Features::is_pro() ) {
+			wp_die( esc_html__( 'This feature is only available in the PRO version.', 'jump-to-checkout' ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'jump-to-checkout' ) );
+		}
+
+		// Get tabs from PRO plugin via filter.
+		$tabs = apply_filters( 'jptc_settings_tabs', array() );
+
+		// Get current tab.
+		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		// If no tabs, show default message.
+		if ( empty( $tabs ) ) {
+			?>
+			<div class="wrap">
+				<h1><?php echo esc_html__( 'Settings', 'jump-to-checkout' ); ?></h1>
+				<p><?php echo esc_html__( 'No settings available.', 'jump-to-checkout' ); ?></p>
+			</div>
+			<?php
+			return;
+		}
+
+		// If no tab selected, use first tab.
+		if ( empty( $current_tab ) ) {
+			$current_tab = $tabs[0]['tab'];
+		}
+		?>
+		<div class="wrap">
+			<h1><?php echo esc_html__( 'Settings', 'jump-to-checkout' ); ?></h1>
+
+			<nav class="nav-tab-wrapper">
+				<?php foreach ( $tabs as $tab ) : ?>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=jptc-settings&tab=' . esc_attr( $tab['tab'] ) ) ); ?>" 
+						class="nav-tab <?php echo $current_tab === $tab['tab'] ? 'nav-tab-active' : ''; ?>">
+						<?php echo esc_html( $tab['label'] ); ?>
+					</a>
+				<?php endforeach; ?>
+			</nav>
+
+			<div class="jptc-settings-content">
+				<?php
+				// Allow PRO to render settings content via action.
+				do_action( 'jptc_settings_tab_content_' . $current_tab );
+				?>
+			</div>
+		</div>
+		<?php
 	}
 }
 

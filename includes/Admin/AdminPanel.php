@@ -102,6 +102,9 @@ class AdminPanel {
 			true
 		);
 
+		// Allow PRO to enqueue additional scripts (e.g., variable products).
+		do_action( 'jptc_enqueue_admin_scripts', $hook );
+
 		wp_localize_script(
 			'jptc-admin',
 			'jptcAdmin',
@@ -213,8 +216,8 @@ class AdminPanel {
 					<?php
 					// Only show expiry section if PRO is active. PRO will render this via filter.
 					if ( Features::is_pro() ) {
-						// PRO will render expiry UI via filter.
 						do_action( 'jptc_render_expiry_section', true );
+						do_action( 'jptc_render_coupon_section', true );
 					}
 					?>
 
@@ -379,6 +382,20 @@ class AdminPanel {
 				$sanitized_product['name'] = sanitize_text_field( $product['name'] );
 			}
 
+			// Add variation_id if present (PRO feature).
+			if ( isset( $product['variation_id'] ) && ! empty( $product['variation_id'] ) ) {
+				$sanitized_product['variation_id'] = absint( $product['variation_id'] );
+			}
+
+			// Add variation attributes if present (PRO feature).
+			if ( isset( $product['variation'] ) && is_array( $product['variation'] ) && ! empty( $product['variation'] ) ) {
+				$sanitized_variation = array();
+				foreach ( $product['variation'] as $attr_name => $attr_value ) {
+					$sanitized_variation[ sanitize_key( $attr_name ) ] = sanitize_text_field( $attr_value );
+				}
+				$sanitized_product['variation'] = $sanitized_variation;
+			}
+
 			// Only add if product_id and quantity are valid.
 			if ( $sanitized_product['product_id'] > 0 && $sanitized_product['quantity'] > 0 ) {
 				$sanitized[] = $sanitized_product;
@@ -422,10 +439,25 @@ class AdminPanel {
 			wp_send_json_error( array( 'message' => __( 'No products selected.', 'jump-to-checkout' ) ) );
 		}
 
+		// Prepare link data for PRO filters.
+		$link_data = array(
+			'name'     => $name,
+			'products' => $products,
+			'expiry'   => $expiry,
+		);
+
+		// Allow PRO to modify link data (e.g., add coupon).
+		$link_data = apply_filters( 'jptc_ajax_link_data', $link_data, $_POST );
+
 		$result = $this->direct_checkout->generate_link( $name, $products, $expiry );
 
 		if ( ! $result || ! isset( $result['url'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'Error generating link.', 'jump-to-checkout' ) ) );
+		}
+
+		// Allow PRO to save additional data (e.g., coupon) after link creation.
+		if ( isset( $result['id'] ) && isset( $link_data['_coupon_code'] ) ) {
+			do_action( 'jptc_after_link_created', $result['id'], $link_data );
 		}
 
 		wp_send_json_success( array( 'link' => $result['url'] ) );
@@ -472,13 +504,21 @@ class AdminPanel {
 					$product_name .= ' (' . $product->get_sku() . ')';
 				}
 
-				$results[] = array(
+				$result = array(
 					'id'   => $product->get_id(),
 					'text' => wp_strip_all_tags( $product_name ),
 				);
+
+				// Allow PRO to enhance result (e.g., add variation data).
+				$result = apply_filters( 'jptc_product_search_result', $result, $product );
+
+				$results[] = $result;
 			}
 			wp_reset_postdata();
 		}
+
+		// Allow PRO to enhance all results (e.g., format variation names).
+		$results = apply_filters( 'jptc_ajax_search_products', $results, $search );
 
 		wp_send_json( array( 'results' => $results ) );
 	}

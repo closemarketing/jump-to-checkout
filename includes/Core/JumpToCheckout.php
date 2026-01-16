@@ -348,6 +348,9 @@ class JumpToCheckout {
 					continue;
 				}
 
+				// Allow PRO to normalize variation attributes before adding to cart.
+				$variation = apply_filters( 'jptc_variation_attributes_before_add_to_cart', $variation, $product_id, $variation_id );
+
 				// Add to cart.
 				$cart_item_key = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation );
 
@@ -380,6 +383,9 @@ class JumpToCheckout {
 				'notice'
 			);
 		}
+
+		// Allow PRO to perform actions before redirect (e.g., apply coupons).
+		do_action( 'jptc_before_redirect_to_checkout', $link );
 
 		// Redirect to checkout.
 		wp_safe_redirect( wc_get_checkout_url() );
