@@ -99,16 +99,10 @@ class JumpToCheckout {
 				$token .= $characters[ wp_rand( 0, strlen( $characters ) - 1 ) ];
 			}
 
-			// Check if token already exists.
-			$table_name = $wpdb->prefix . 'jptc_links';
-			$exists     = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(*) FROM {$table_name} WHERE token = %s",
-					$token
-				)
-			);
+			// Check if token already exists using Database class method.
+			$existing_link = $this->db->get_link_by_token( $token );
 
-			if ( ! $exists ) {
+			if ( ! $existing_link ) {
 				return $token;
 			}
 		}
