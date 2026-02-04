@@ -112,16 +112,17 @@ class AdminPanel {
 				'is_pro'       => Features::is_pro(),
 				'upgrade_url'  => Features::get_upgrade_url(),
 				'i18n'         => array(
-					'copy_success'         => __( 'Link copied to clipboard!', 'jump-to-checkout' ),
-					'copy_error'           => __( 'Failed to copy link.', 'jump-to-checkout' ),
-					'generate_error'       => __( 'Error generating link.', 'jump-to-checkout' ),
-					'search_placeholder'   => __( 'Search products...', 'jump-to-checkout' ),
-					'no_products'          => __( 'No products found.', 'jump-to-checkout' ),
-					'no_link_name'         => __( 'Please enter a link name.', 'jump-to-checkout' ),
-					'no_products_selected' => __( 'Please select at least one product.', 'jump-to-checkout' ),
-					'no_link_in_response'  => __( 'No link in response', 'jump-to-checkout' ),
-					'no_products_label'    => __( 'No products selected.', 'jump-to-checkout' ),
-					'remove_button'        => __( 'Remove', 'jump-to-checkout' ),
+					'copy_success'           => __( 'Link copied to clipboard!', 'jump-to-checkout' ),
+					'copy_error'             => __( 'Failed to copy link.', 'jump-to-checkout' ),
+					'generate_error'         => __( 'Error generating link.', 'jump-to-checkout' ),
+					'search_placeholder'     => __( 'Search products...', 'jump-to-checkout' ),
+					'no_products'            => __( 'No products found.', 'jump-to-checkout' ),
+					'no_link_name'           => __( 'Please enter a link name.', 'jump-to-checkout' ),
+					'no_products_selected'   => __( 'Please select at least one product.', 'jump-to-checkout' ),
+					'no_link_in_response'    => __( 'No link in response', 'jump-to-checkout' ),
+					'no_products_label'      => __( 'No products selected.', 'jump-to-checkout' ),
+					'remove_button'          => __( 'Remove', 'jump-to-checkout' ),
+					'variable_product_error' => __( 'Variable products cannot be added directly. Please select a specific variation.', 'jump-to-checkout' ),
 				),
 			)
 		);
@@ -472,6 +473,47 @@ class AdminPanel {
 					$product_name .= ' (' . $product->get_sku() . ')';
 				}
 
+				// Variable products should NEVER be selectable (FREE or PRO).
+				// They need specific variations to be added to cart.
+				if ( $product->is_type( 'variable' ) ) {
+					if ( Features::is_pro() ) {
+						$product_name .= ' ' . __( '[Variable Product - Select variation below]', 'jump-to-checkout' );
+					} else {
+						$product_name .= ' ' . __( '[PRO: Variable Product]', 'jump-to-checkout' );
+					}
+
+					$results[] = array(
+						'id'       => $product->get_id(),
+						'text'     => wp_strip_all_tags( $product_name ),
+						'disabled' => true,
+					);
+					continue;
+				}
+
+				// Variations are only selectable in PRO.
+				if ( $product->is_type( 'variation' ) ) {
+					if ( Features::is_pro() ) {
+						// PRO: Show variation as selectable with indicator.
+						$product_name .= ' ' . __( '[Variation]', 'jump-to-checkout' );
+
+						$results[] = array(
+							'id'   => $product->get_id(),
+							'text' => wp_strip_all_tags( $product_name ),
+						);
+					} else {
+						// FREE: Disable variations.
+						$product_name .= ' ' . __( '[PRO: Variation]', 'jump-to-checkout' );
+
+						$results[] = array(
+							'id'       => $product->get_id(),
+							'text'     => wp_strip_all_tags( $product_name ),
+							'disabled' => true,
+						);
+					}
+					continue;
+				}
+
+				// Simple products are always selectable.
 				$results[] = array(
 					'id'   => $product->get_id(),
 					'text' => wp_strip_all_tags( $product_name ),

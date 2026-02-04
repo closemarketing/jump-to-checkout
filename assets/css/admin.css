@@ -461,6 +461,24 @@
 	}
 }
 
+/* Select2 disabled options (variable products) */
+.select2-results__option[aria-disabled="true"] {
+	color: #a7aaad !important;
+	cursor: not-allowed !important;
+	background-color: #f6f7f7 !important;
+	opacity: 0.6;
+}
+
+.select2-results__option[aria-disabled="true"]:hover {
+	background-color: #f6f7f7 !important;
+}
+
+/* Strike-through effect for disabled options */
+.select2-results__option--disabled {
+	text-decoration: line-through;
+	font-style: italic;
+}
+
 @media (max-width: 782px) {
 	.jump-to-checkout-product-row {
 		grid-template-columns: 1fr;
