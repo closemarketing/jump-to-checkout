@@ -81,6 +81,53 @@ class JumpToCheckout {
 	}
 
 	/**
+	 * Generate unique short token (8-10 characters)
+	 *
+	 * @return string
+	 */
+	private function generate_short_token() {
+		global $wpdb;
+
+		// Characters allowed in short token (alphanumeric, URL-safe).
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$length     = 10;
+		$max_tries  = 10;
+
+		for ( $i = 0; $i < $max_tries; $i++ ) {
+			$token = '';
+			for ( $j = 0; $j < $length; $j++ ) {
+				$token .= $characters[ wp_rand( 0, strlen( $characters ) - 1 ) ];
+			}
+
+			// Check if token already exists.
+			$table_name = $wpdb->prefix . 'jptc_links';
+			$exists     = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(*) FROM {$table_name} WHERE token = %s",
+					$token
+				)
+			);
+
+			if ( ! $exists ) {
+				return $token;
+			}
+		}
+
+		// Fallback: use timestamp + random.
+		return substr( md5( time() . wp_rand() ), 0, 10 );
+	}
+
+	/**
+	 * Check if token is new short format (10 chars) or old long format
+	 *
+	 * @param string $token Token to check.
+	 * @return bool True if new short format, false if old long format.
+	 */
+	private function is_short_token( $token ) {
+		return strlen( $token ) <= 20;
+	}
+
+	/**
 	 * Add custom query vars
 	 *
 	 * @param array $vars Query vars.
@@ -128,18 +175,8 @@ class JumpToCheckout {
 		// FREE version: never calculate expiry. PRO can override via filter.
 		$expiry = apply_filters( 'jptc_link_expiry', 0, $name, $products );
 
-		// Token data - FREE never includes expiry. PRO can add it via filter.
-		$data = array(
-			'products' => $products,
-			'exp'      => 0, // FREE never expires. PRO will modify this via filter.
-			'iss'      => 'jptc',
-			'iat'      => time(),
-		);
-
-		// Allow PRO to modify token data (PRO will add expiry here).
-		$data = apply_filters( 'jptc_token_data_before_encode', $data, $name, $products, $expiry );
-
-		$token = $this->encode_token( $data );
+		// Generate short token (new format: just a random ID, products stored in DB).
+		$token = $this->generate_short_token();
 		$url   = home_url( '/jump-to-checkout/' . $token );
 
 		// FREE version: never calculate expiry data. PRO will add it via filter.
@@ -295,15 +332,23 @@ class JumpToCheckout {
 		$cookie_domain = defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '';
 		setcookie( 'jptc_link_id', $link->id, time() + DAY_IN_SECONDS, $cookie_path, $cookie_domain, is_ssl(), true );
 
-		// Decode token.
-		$data = $this->decode_token( $token );
-
-		if ( false === $data ) {
-			wp_die(
-				esc_html__( 'Invalid or expired checkout link.', 'jump-to-checkout' ),
-				esc_html__( 'Error', 'jump-to-checkout' ),
-				array( 'response' => 403 )
+		// Check if token is new short format or old long format.
+		if ( $this->is_short_token( $token ) ) {
+			// New format: products are stored in database.
+			$data = array(
+				'products' => json_decode( $link->products, true ),
 			);
+		} else {
+			// Old format: decode token to get product data (backward compatibility).
+			$data = $this->decode_token( $token );
+
+			if ( false === $data ) {
+				wp_die(
+					esc_html__( 'Invalid or expired checkout link.', 'jump-to-checkout' ),
+					esc_html__( 'Error', 'jump-to-checkout' ),
+					array( 'response' => 403 )
+				);
+			}
 		}
 
 		// Clear cart.

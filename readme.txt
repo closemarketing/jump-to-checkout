@@ -189,6 +189,9 @@ Statistics export is available in the PRO version (CSV/Excel format).
 
 == Changelog ==
 
+= 1.0.2 =
+* Length of the token has been reduced to 10 characters.
+
 = 1.0.1 =
 * Fixed: some issues in admin area.
 * Improved: added internal test to make it more robust.
