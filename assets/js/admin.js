@@ -92,6 +92,13 @@
 			return;
 		}
 
+		// Check if product is disabled (variable product).
+		if (selectedOption.disabled || selectedOption.hasAttribute('disabled')) {
+			alert(jptcAdmin.i18n.variable_product_error || 'Variable products cannot be added directly. Please select a specific variation.');
+			// Reset select2.
+			jQuery('.jump-to-checkout-product-search').val(null).trigger('change');
+			return;
+		}
 
 		const productId = selectedOption.value;
 		// Strip HTML tags from product name.
