@@ -190,12 +190,16 @@ Statistics export is available in the PRO version (CSV/Excel format).
 == Changelog ==
 
 = 1.0.2 =
+<<<<<<< length-token
+* Length of the token has been reduced to 10 characters.
+=======
 * Improved: Shortened token length to 10 characters for cleaner, more shareable URLs
 * Fixed: Variable products (parent) are now always disabled to prevent direct cart addition
 * Fixed: Product variations are only selectable in PRO version
 * Added: Visual indicators showing product type (Variable Product, Variation, or Simple)
 * Added: Clear PRO upgrade prompts for variable products and variations in FREE version
 * Enhanced: Better backward compatibility with existing long-format tokens
+>>>>>>> main
 
 = 1.0.1 =
 * Fixed: some issues in admin area.
