@@ -32,6 +32,9 @@ jobs:
           extensions: mbstring, xml, zip, intl, pdo, mysql
           coverage: none
 
+      - name: Install Composer dependencies
+        run: composer install --no-progress --no-interaction --prefer-dist
+
       - name: Install SVN
         run: sudo apt-get update && sudo apt-get install -y subversion
 
