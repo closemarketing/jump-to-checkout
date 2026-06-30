@@ -1,0 +1,52 @@
+/**
+ * Variable Products Styles
+ */
+
+.jptc-variation-selector {
+	margin: 15px 0;
+	padding: 15px;
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.jptc-variation-selector h4 {
+	margin: 0 0 15px 0;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.jptc-variation-attributes {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.jptc-variation-attribute label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 5px;
+}
+
+.jptc-variation-attribute select {
+	width: 100%;
+	max-width: 300px;
+	padding: 5px;
+}
+
+.jptc-variation-selected {
+	margin-top: 15px;
+	padding: 10px;
+	background: #e7f5e7;
+	border: 1px solid #4caf50;
+	border-radius: 4px;
+}
+
+.jptc-variation-selected .description {
+	margin: 0;
+}
+
+.jptc-selected-variation-name {
+	font-weight: 600;
+	color: #2e7d32;
+}

@@ -29,7 +29,7 @@ class JumpToCheckout {
 	/**
 	 * Database instance
 	 *
-	 * @var Database
+	 * @var \CLOSE\JumpToCheckout\Database\Database
 	 */
 	private $db;
 
@@ -86,8 +86,6 @@ class JumpToCheckout {
 	 * @return string
 	 */
 	private function generate_short_token() {
-		global $wpdb;
-
 		// Characters allowed in short token (alphanumeric, URL-safe).
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$length     = 10;
@@ -197,20 +195,6 @@ class JumpToCheckout {
 			'url'   => $url,
 			'token' => $token,
 		);
-	}
-
-	/**
-	 * Encode token
-	 *
-	 * @param array $data Data to encode.
-	 * @return string
-	 */
-	private function encode_token( $data ) {
-		$json    = wp_json_encode( $data );
-		$encoded = base64_encode( $json ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-		$hash    = hash_hmac( 'sha256', $encoded, $this->secret_key );
-
-		return base64_encode( $encoded . '.' . $hash ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
 	/**
@@ -420,6 +404,9 @@ class JumpToCheckout {
 			);
 		}
 
+		// Allow AutomaticCoupons and other extensions to act before redirecting.
+		do_action( 'jptc_before_redirect_to_checkout', $link );
+
 		// Redirect to checkout.
 		wp_safe_redirect( wc_get_checkout_url() );
 		exit;
@@ -500,7 +487,7 @@ class JumpToCheckout {
 		}
 
 		// Increment conversion count.
-		$result = $this->db->increment_conversions( $link_id );
+		$this->db->increment_conversions( $link_id );
 
 		// Mark as counted.
 		update_post_meta( $order_id, '_jptc_conversion_counted', '1' );

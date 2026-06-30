@@ -3,9 +3,9 @@ Contributors: closetechnology, davidperez, alexbreagarcia
 Donate link: https://close.technology
 Tags: woocommerce, checkout, direct link, cart, conversion
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,37 +18,17 @@ Generate secure direct checkout links with pre-selected products for WooCommerce
 = 🚀 Key Features =
 
 * ✅ **Unlimited Links** - Create as many checkout links as you need
-* ✅ **Multiple Products** - Add multiple products to a single link
+* ✅ **Multiple Products** - Add multiple products and variations to a single link
+* ✅ **Variable Products** - Full support for variable products and their variations
 * ✅ **Secure Checkout Links** - Cryptographically signed URLs prevent tampering
+* ✅ **Link Expiration** - Set custom expiration dates for time-sensitive campaigns
+* ✅ **Automatic Coupons** - Apply discount codes automatically when links are clicked
+* ✅ **Advanced Analytics** - Detailed dashboard with interactive charts and performance insights
+* ✅ **Export to CSV** - Export all statistics for external analysis
 * ✅ **Basic Statistics** - Track visits and conversions for each link
-* ✅ **Never Expire** - Links remain active permanently
 * ✅ **Easy Link Management** - Simple interface to create, copy, and manage links
 * ✅ **Link Toggle** - Enable/disable links without deleting them
 * ✅ **WooCommerce Integration** - Seamless integration with your store
-
-= 💎 PRO Features =
-
-Upgrade to **Jump to Checkout PRO** to unlock advanced features:
-
-* ⭐ **Variable Products** - Support for variable products
-* ⭐ **Advanced Analytics** - Detailed dashboard with interactive charts, trends, and performance insights
-* ⭐ **Data Export** - Export statistics to CSV/Excel for external analysis
-* ⭐ **Automatic Coupons** - Apply discount codes automatically when links are clicked
-* ⭐ **Link Expiration** - Set custom expiration dates and times for time-sensitive campaigns
-* ⭐ **Templates** - Save and reuse link configurations for faster link creation
-* ⭐ **UTM Tracking** - Automatic UTM parameters for better campaign tracking in Google Analytics
-* ⭐ **Webhooks** - Real-time notifications for conversions and link events
-* ⭐ **REST API** - Full API access to create and manage links programmatically
-* ⭐ **Scheduled Links** - Schedule links to activate/deactivate automatically
-* ⭐ **Link Categories & Tags** - Organize links with categories and tags for better management
-* ⭐ **Bulk Operations** - Create multiple links from CSV and manage links in bulk
-* ⭐ **Custom Checkout Messages** - Display personalized messages on checkout per link
-* ⭐ **Email Notifications** - Get notified when links generate conversions
-* ⭐ **QR Code Generation** - Generate QR codes for your checkout links
-* ⭐ **White Label** - Remove plugin branding and customize the experience
-* ⭐ **Priority Support** - Fast response from our expert team
-
-[Learn more about PRO features →](https://close.technology/en/wordpress-plugins/jump-to-checkout-pro/)
 
 = 🎯 Perfect For =
 
@@ -77,6 +57,7 @@ Monitor the effectiveness of your links:
 * **Conversions** - Track completed purchases
 * **Conversion Rate** - Measure link performance
 * **Per-Link Statistics** - Analyze each link individually
+* **Advanced Charts** - Visualize trends over time
 
 = 🎨 Use Cases =
 
@@ -86,8 +67,8 @@ Create a direct checkout link for your featured product and include it in your n
 **Example 2: Social Media**
 Share a link on Instagram stories or Facebook ads that adds a bundle of products and redirects to checkout instantly.
 
-**Example 3: Customer Service**
-Help a customer who's struggling to find a product by sending them a direct link that adds it to their cart.
+**Example 3: Flash Sale**
+Set a link with an automatic coupon and an expiration date. The discount applies automatically and the link stops working when the sale ends.
 
 **Example 4: Influencer Partnership**
 Provide influencers with unique checkout links to track conversions from their audience.
@@ -125,26 +106,35 @@ Clean, well-documented code following WordPress and WooCommerce coding standards
 2. Click "Generate Link"
 3. Enter a name for your link (e.g., "Summer Sale 2025")
 4. Select a product and set the quantity
-5. Click "Generate Link"
-6. Copy the link and share it with your customers!
+5. Optionally set an expiry time or automatic coupon
+6. Click "Generate Link"
+7. Copy the link and share it with your customers!
 
 == Frequently Asked Questions ==
 
-= How many links can I create with the free version? =
+= How many links can I create? =
 
-This version has no limits! You can create unlimited links and add multiple products to each link. The PRO version adds advanced features like analytics, export, automatic coupons, templates, API access, and more.
+Unlimited. You can create as many checkout links as you need and add multiple products to each link.
 
 = Can I add multiple products to one link? =
 
-Yes! This version supports multiple products per link. You can add as many products as you need to any checkout link.
+Yes! You can add as many simple products, variable products, and variations as you need to any checkout link.
 
 = Do the links expire? =
 
-In this version, links never expire. The PRO version allows you to set custom expiration dates and times.
+Links never expire by default. You can set a custom expiration time (in hours) when creating each link.
+
+= Can I apply a coupon automatically? =
+
+Yes. When generating a link you can select any active WooCommerce coupon and it will be applied to the cart automatically when the link is clicked.
 
 = Can I track conversions from my links? =
 
-Yes! Each link tracks visits and conversions automatically. You can see these statistics in the "Manage Links" page.
+Yes. Each link tracks visits and conversions automatically. You can see these statistics in the "Manage Links" page and in the "Analytics" dashboard with interactive charts.
+
+= Can I export the statistics? =
+
+Yes. Use the "Export to CSV" button on the Manage Links page to download all statistics.
 
 = Are the links secure? =
 
@@ -156,11 +146,11 @@ The plugin checks stock availability when the link is clicked. If the product is
 
 = Can I use this with variable products? =
 
-Yes, variable products are supported. The PRO version offers advanced variation handling.
+Yes. Variable products are fully supported. You can select specific variations when creating a link.
 
 = Does this work with coupons? =
 
-Links work alongside WooCommerce coupons. Customers can apply coupon codes at checkout. The PRO version can automatically apply coupons to links.
+Links work alongside WooCommerce coupons. You can configure a coupon to be applied automatically when a link is clicked.
 
 = Can I customize the checkout process? =
 
@@ -174,28 +164,24 @@ Yes, the plugin works with any WordPress theme and uses standard WooCommerce fun
 
 The plugin only stores basic link statistics (visits and conversions). No personal customer data is collected or stored.
 
-= Can I export statistics? =
-
-Statistics export is available in the PRO version (CSV/Excel format).
-
 == Screenshots ==
 
 1. Link Generator - Create new checkout links in seconds
-2. Manage Links - View all your links with statistics
-3. Link Statistics - Track visits, conversions, and conversion rates
-4. Product Selection - Easy product search and selection
+2. Manage Links - View all your links with statistics and export to CSV
+3. Analytics - Charts with visits, conversions and conversion rate over time
+4. Product Selection - Easy product and variation search and selection
 5. Generated Link - Copy and share your secure checkout link
-6. Pro Upgrade - See all available PRO features
 
 == Changelog ==
 
-= 1.0.2 =
+= 1.1.0 =
+* Added: Variable products and variations support
+* Added: Link expiration (set expiry in hours per link)
+* Added: Automatic coupon application on link click
+* Added: Advanced analytics dashboard with interactive charts
+* Added: Export statistics to CSV
 * Improved: Shortened token length to 10 characters for cleaner, more shareable URLs
 * Fixed: Variable products (parent) are now always disabled to prevent direct cart addition
-* Fixed: Product variations are only selectable in PRO version
-* Added: Visual indicators showing product type (Variable Product, Variation, or Simple)
-* Added: Clear PRO upgrade prompts for variable products and variations in FREE version
-* Enhanced: Better backward compatibility with existing long-format tokens
 
 = 1.0.1 =
 * Fixed: some issues in admin area.
@@ -204,7 +190,7 @@ Statistics export is available in the PRO version (CSV/Excel format).
 = 1.0.0 =
 * Initial release
 * Create secure direct checkout links
-* Support for unlimited links (FREE)
+* Support for unlimited links
 * Basic statistics tracking (visits and conversions)
 * Link management interface
 * Enable/disable links without deletion
@@ -215,7 +201,7 @@ Statistics export is available in the PRO version (CSV/Excel format).
 == Upgrade Notice ==
 
 = 1.0.2 =
-Shorter, cleaner URLs and better handling of variable products. All existing links continue to work.
+Variable products, link expiration, automatic coupons, advanced analytics and CSV export are now included.
 
 = 1.0.1 =
 Bug fixes and stability improvements.
@@ -244,7 +230,6 @@ This plugin does not connect to any third-party services or APIs. All functional
 
 == Support ==
 
-* **Free Support**: [WordPress.org Forums](https://wordpress.org/support/plugin/jump-to-checkout/)
+* **Support**: [WordPress.org Forums](https://wordpress.org/support/plugin/jump-to-checkout/)
 * **Documentation**: [Plugin Documentation](https://close.technology/docs/jump-to-checkout/)
-* **PRO Support**: Priority email support included with PRO license
 * **Website**: [close.technology](https://close.technology)

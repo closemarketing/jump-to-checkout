@@ -3,7 +3,7 @@
  * Plugin Name: Jump to Checkout
  * Plugin URI:  https://close.technology/wordpress-plugins/jump-to-checkout-pro/
  * Description: Generate direct checkout links with pre-selected products for WooCommerce.
- * Version:     1.0.2
+ * Version:     1.1.0-rc.1
  * Author:      Close Marketing
  * Author URI:  https://close.marketing
  * Text Domain: jump-to-checkout
@@ -24,12 +24,10 @@
 
 defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
-define( 'JTPC_VERSION', '1.0.2' );
+define( 'JTPC_VERSION', '1.1.0-rc.1' );
 define( 'JTPC_PLUGIN', __FILE__ );
 define( 'JTPC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'JTPC_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
-define( 'JTPC_IS_PRO', false ); // FREE version.
-define( 'JTPC_UPGRADE_URL', 'https://close.technology/en/wordpress-plugins/jump-to-checkout-pro/' );
 
 // Load Composer autoloader (includes PSR-4 autoload for plugin classes).
 if ( file_exists( JTPC_PLUGIN_PATH . 'vendor/autoload.php' ) ) {
@@ -50,8 +48,13 @@ function jptc_plugin_init() {
 		$db->maybe_create_table();
 
 		new CLOSE\JumpToCheckout\Core\JumpToCheckout();
+		new CLOSE\JumpToCheckout\Core\LinkExpiration();
+		new CLOSE\JumpToCheckout\Core\VariableProducts();
+		new CLOSE\JumpToCheckout\Core\AutomaticCoupons();
+		new CLOSE\JumpToCheckout\Core\DataExport();
 		new CLOSE\JumpToCheckout\Admin\AdminPanel();
 		new CLOSE\JumpToCheckout\Admin\LinksManager();
+		new CLOSE\JumpToCheckout\Admin\AdvancedAnalytics();
 	}
 }
 

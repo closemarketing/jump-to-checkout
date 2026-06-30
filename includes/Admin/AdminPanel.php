@@ -2,7 +2,7 @@
 /**
  * Admin Panel Class
  *
- * Handles the admin panel for generating checkout links - FREE VERSION
+ * Handles the admin panel for generating checkout links
  *
  * @package    CLOSE\JumpToCheckout\Admin
  * @author     Close Marketing
@@ -11,8 +11,6 @@
  */
 
 namespace CLOSE\JumpToCheckout\Admin;
-
-use CLOSE\JumpToCheckout\Core\Features;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -32,18 +30,11 @@ class AdminPanel {
 	 * Constructor
 	 */
 	public function __construct() {
-		// Add admin menu.
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
-
-		// Enqueue admin scripts.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
-
-		// Handle AJAX requests.
 		add_action( 'wp_ajax_jptc_generate_link', array( $this, 'ajax_generate_link' ) );
 		add_action( 'wp_ajax_jptc_search_products', array( $this, 'ajax_search_products' ) );
-		add_action( 'wp_ajax_jptc_dismiss_upgrade_widget', array( $this, 'ajax_dismiss_upgrade_widget' ) );
 
-		// Initialize Jump to Checkout.
 		$this->direct_checkout = new \CLOSE\JumpToCheckout\Core\JumpToCheckout();
 	}
 
@@ -53,7 +44,6 @@ class AdminPanel {
 	 * @return void
 	 */
 	public function add_admin_menu() {
-		// Main menu.
 		add_menu_page(
 			__( 'Jump to Checkout', 'jump-to-checkout' ),
 			__( 'Jump to Checkout', 'jump-to-checkout' ),
@@ -64,7 +54,6 @@ class AdminPanel {
 			56
 		);
 
-		// Submenu: Generate Link.
 		add_submenu_page(
 			'jptc-jump-to-checkout',
 			__( 'Generate Link', 'jump-to-checkout' ),
@@ -74,7 +63,6 @@ class AdminPanel {
 			array( $this, 'render_admin_page' )
 		);
 	}
-
 
 	/**
 	 * Enqueue admin scripts
@@ -106,12 +94,9 @@ class AdminPanel {
 			'jptc-admin',
 			'jptcAdmin',
 			array(
-				'ajax_url'     => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'jptc_admin_nonce' ),
-				'dismissNonce' => wp_create_nonce( 'jptc_dismiss_upgrade' ),
-				'is_pro'       => Features::is_pro(),
-				'upgrade_url'  => Features::get_upgrade_url(),
-				'i18n'         => array(
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'jptc_admin_nonce' ),
+				'i18n'     => array(
 					'copy_success'           => __( 'Link copied to clipboard!', 'jump-to-checkout' ),
 					'copy_error'             => __( 'Failed to copy link.', 'jump-to-checkout' ),
 					'generate_error'         => __( 'Error generating link.', 'jump-to-checkout' ),
@@ -123,11 +108,16 @@ class AdminPanel {
 					'no_products_label'      => __( 'No products selected.', 'jump-to-checkout' ),
 					'remove_button'          => __( 'Remove', 'jump-to-checkout' ),
 					'variable_product_error' => __( 'Variable products cannot be added directly. Please select a specific variation.', 'jump-to-checkout' ),
+					'select_variation'       => __( 'Select Variation', 'jump-to-checkout' ),
+					'choose_option'          => __( 'Choose an option', 'jump-to-checkout' ),
+					'selected_variation'     => __( 'Selected variation:', 'jump-to-checkout' ),
 				),
 			)
 		);
 
-		// Select2 for product search (local copy).
+		// Allow other classes to enqueue their scripts for this hook.
+		do_action( 'jptc_enqueue_admin_scripts', $hook );
+
 		wp_enqueue_style(
 			'jptc-select2',
 			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/css/select2.min.css',
@@ -158,14 +148,9 @@ class AdminPanel {
 			<h1><?php echo esc_html__( 'Jump to Checkout Link Generator', 'jump-to-checkout' ); ?></h1>
 			<p><?php echo esc_html__( 'Generate secure links that automatically add products to cart and redirect to checkout.', 'jump-to-checkout' ); ?></p>
 
-			<?php if ( ! Features::is_pro() ) : ?>
-				<?php $this->render_upgrade_widget(); ?>
-			<?php endif; ?>
-
 			<div class="jump-to-checkout-admin-container">
 				<div class="jump-to-checkout-form-section">
 					<h2><?php echo esc_html__( 'Generate New Link', 'jump-to-checkout' ); ?></h2>
-
 
 					<div class="jump-to-checkout-link-name-section">
 						<label><?php echo esc_html__( 'Link Name', 'jump-to-checkout' ); ?></label>
@@ -211,13 +196,8 @@ class AdminPanel {
 						</table>
 					</div>
 
-					<?php
-					// Only show expiry section if PRO is active. PRO will render this via filter.
-					if ( Features::is_pro() ) {
-						// PRO will render expiry UI via filter.
-						do_action( 'jptc_render_expiry_section', true );
-					}
-					?>
+					<?php do_action( 'jptc_render_expiry_section', true ); ?>
+					<?php do_action( 'jptc_render_coupon_section', true ); ?>
 
 					<div class="jump-to-checkout-generate-section">
 						<button type="button" class="button button-primary button-large jump-to-checkout-generate-link">
@@ -239,19 +219,32 @@ class AdminPanel {
 							</p>
 						</div>
 					</div>
-
-					<?php if ( ! Features::is_pro() ) : ?>
-						<div class="jump-to-checkout-free-footer">
-							<p><strong><?php esc_html_e( 'You are using Jump to Checkout FREE', 'jump-to-checkout' ); ?></strong></p>
-							<p><?php esc_html_e( 'Unlock advanced features like analytics, export, automatic coupons, templates, API access, and more with PRO.', 'jump-to-checkout' ); ?></p>
-							<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary" target="_blank">
-								<?php esc_html_e( 'Upgrade to PRO', 'jump-to-checkout' ); ?>
-							</a>
-						</div>
-					<?php endif; ?>
 				</div>
 
 				<div class="jump-to-checkout-info-section">
+					<div class="jump-to-checkout-promo-box">
+						<p class="jump-to-checkout-promo-by"><?php esc_html_e( 'Built by', 'jump-to-checkout' ); ?> <strong>Close Technology</strong></p>
+						<p class="jump-to-checkout-promo-tagline">
+							<?php esc_html_e( 'Need a custom WooCommerce feature? We build tailored solutions for your store.', 'jump-to-checkout' ); ?>
+						</p>
+						<ul class="jump-to-checkout-promo-list">
+							<li><?php esc_html_e( 'Custom plugins &amp; integrations', 'jump-to-checkout' ); ?></li>
+							<li><?php esc_html_e( 'WooCommerce development', 'jump-to-checkout' ); ?></li>
+							<li><?php esc_html_e( 'Performance &amp; optimization', 'jump-to-checkout' ); ?></li>
+						</ul>
+						<a href="https://close.technology/en/services/custom-development/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=jump-to-checkout&utm_content=sidebar-widget"
+							class="button button-primary jump-to-checkout-promo-cta"
+							target="_blank"
+							rel="noopener noreferrer">
+							<?php esc_html_e( 'Custom Development', 'jump-to-checkout' ); ?> &rarr;
+						</a>
+						<p class="jump-to-checkout-promo-footer">
+							<a href="https://close.technology/?utm_source=wp-admin&utm_medium=plugin&utm_campaign=jump-to-checkout&utm_content=sidebar-footer"
+								target="_blank"
+								rel="noopener noreferrer">close.technology</a>
+						</p>
+					</div>
+
 					<div class="jump-to-checkout-info-box">
 						<h3><?php echo esc_html__( 'How it works', 'jump-to-checkout' ); ?></h3>
 						<ol>
@@ -283,57 +276,6 @@ class AdminPanel {
 	}
 
 	/**
-	 * Render upgrade widget
-	 *
-	 * @return void
-	 */
-	private function render_upgrade_widget() {
-		// Check if user dismissed the widget.
-		if ( get_user_meta( get_current_user_id(), 'jptc_upgrade_widget_dismissed', true ) ) {
-			return;
-		}
-		?>
-		<div class="notice notice-info is-dismissible jump-to-checkout-upgrade-widget" data-dismissible="jump-to-checkout-upgrade-widget">
-			<button type="button" class="notice-dismiss jump-to-checkout-dismiss-upgrade">
-				<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'jump-to-checkout' ); ?></span>
-			</button>
-			<div class="jump-to-checkout-upgrade-content">
-				<div class="jump-to-checkout-upgrade-header">
-					<h3>🚀 <?php esc_html_e( 'Unlock Full Potential with PRO', 'jump-to-checkout' ); ?></h3>
-				</div>
-				<div class="jump-to-checkout-upgrade-columns">
-					<div class="jump-to-checkout-features-column">
-						<ul class="jump-to-checkout-features-list">
-							<li>⭐ <?php esc_html_e( 'Advanced analytics with charts', 'jump-to-checkout' ); ?></li>
-							<li>⭐ <?php esc_html_e( 'Export to CSV/Excel', 'jump-to-checkout' ); ?></li>
-							<li>⭐ <?php esc_html_e( 'Automatic coupons', 'jump-to-checkout' ); ?></li>
-							<li>⭐ <?php esc_html_e( 'Link expiration', 'jump-to-checkout' ); ?></li>
-						</ul>
-					</div>
-					<div class="jump-to-checkout-features-column">
-						<ul class="jump-to-checkout-features-list">
-							<li>⭐ <?php esc_html_e( 'Templates & UTM tracking', 'jump-to-checkout' ); ?></li>
-							<li>⭐ <?php esc_html_e( 'API & Webhooks', 'jump-to-checkout' ); ?></li>
-							<li>⭐ <?php esc_html_e( 'Scheduled links', 'jump-to-checkout' ); ?></li>
-							<li>⭐ <?php esc_html_e( 'Priority support', 'jump-to-checkout' ); ?></li>
-						</ul>
-					</div>
-					<div class="jump-to-checkout-cta-column">
-						<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary button-large" target="_blank">
-							<?php esc_html_e( 'Upgrade to PRO', 'jump-to-checkout' ); ?>
-						</a>
-						<p class="jump-to-checkout-guarantee">
-							<small>✓ <?php esc_html_e( '30-day money back guarantee', 'jump-to-checkout' ); ?></small>
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-		<?php
-	}
-
-
-	/**
 	 * Sanitize products data from JSON
 	 *
 	 * @param string $json_data JSON string with products data.
@@ -344,43 +286,43 @@ class AdminPanel {
 			return array();
 		}
 
-		// Decode JSON.
 		$decoded = json_decode( $json_data, true );
 
-		// Validate JSON decode was successful.
 		if ( null === $decoded || JSON_ERROR_NONE !== json_last_error() ) {
 			return array();
 		}
 
-		// Ensure it's an array.
 		if ( ! is_array( $decoded ) ) {
 			return array();
 		}
 
-		// Sanitize each product.
 		$sanitized = array();
 		foreach ( $decoded as $product ) {
 			if ( ! is_array( $product ) ) {
 				continue;
 			}
 
-			// Validate required fields exist.
 			if ( ! isset( $product['product_id'] ) || ! isset( $product['quantity'] ) ) {
 				continue;
 			}
 
-			// Sanitize fields.
 			$sanitized_product = array(
 				'product_id' => absint( $product['product_id'] ),
 				'quantity'   => absint( $product['quantity'] ),
 			);
 
-			// Add name if present.
+			if ( isset( $product['variation_id'] ) ) {
+				$sanitized_product['variation_id'] = absint( $product['variation_id'] );
+			}
+
+			if ( isset( $product['variation'] ) && is_array( $product['variation'] ) ) {
+				$sanitized_product['variation'] = array_map( 'sanitize_text_field', $product['variation'] );
+			}
+
 			if ( isset( $product['name'] ) ) {
 				$sanitized_product['name'] = sanitize_text_field( $product['name'] );
 			}
 
-			// Only add if product_id and quantity are valid.
 			if ( $sanitized_product['product_id'] > 0 && $sanitized_product['quantity'] > 0 ) {
 				$sanitized[] = $sanitized_product;
 			}
@@ -401,20 +343,13 @@ class AdminPanel {
 			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'jump-to-checkout' ) ) );
 		}
 
-		$name = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
-		// FREE version: always use 0 expiry. PRO can override via filter.
-		$expiry = 0;
-		if ( Features::is_pro() ) {
-			$expiry = isset( $_POST['expiry'] ) ? absint( $_POST['expiry'] ) : 0;
-		}
-		// Allow PRO to modify expiry via filter.
-		$expiry = apply_filters( 'jptc_ajax_link_expiry', $expiry, $_POST );
+		$name   = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+		$expiry = apply_filters( 'jptc_ajax_link_expiry', 0, $_POST );
 
 		if ( empty( $name ) ) {
 			wp_send_json_error( array( 'message' => __( 'Please enter a link name.', 'jump-to-checkout' ) ) );
 		}
 
-		// Sanitize and validate products data.
 		$products = $this->sanitize_products_data(
 			isset( $_POST['products'] ) ? wp_unslash( $_POST['products'] ) : '' // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized in sanitize_products_data method.
 		);
@@ -423,11 +358,17 @@ class AdminPanel {
 			wp_send_json_error( array( 'message' => __( 'No products selected.', 'jump-to-checkout' ) ) );
 		}
 
+		// Allow AutomaticCoupons to read POST data before link is created.
+		$link_data = apply_filters( 'jptc_ajax_link_data', array(), $_POST );
+
 		$result = $this->direct_checkout->generate_link( $name, $products, $expiry );
 
 		if ( ! $result || ! isset( $result['url'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'Error generating link.', 'jump-to-checkout' ) ) );
 		}
+
+		// Allow AutomaticCoupons to save coupon after link creation.
+		do_action( 'jptc_after_link_created', $result['id'], $link_data );
 
 		wp_send_json_success( array( 'link' => $result['url'] ) );
 	}
@@ -465,22 +406,15 @@ class AdminPanel {
 					continue;
 				}
 
-				// Get product name and strip HTML.
 				$product_name = $product->get_name();
 
-				// Add SKU if available.
 				if ( $product->get_sku() ) {
 					$product_name .= ' (' . $product->get_sku() . ')';
 				}
 
-				// Variable products should NEVER be selectable (FREE or PRO).
-				// They need specific variations to be added to cart.
+				// Variable products are never directly selectable; user must choose a variation.
 				if ( $product->is_type( 'variable' ) ) {
-					if ( Features::is_pro() ) {
-						$product_name .= ' ' . __( '[Variable Product - Select variation below]', 'jump-to-checkout' );
-					} else {
-						$product_name .= ' ' . __( '[PRO: Variable Product]', 'jump-to-checkout' );
-					}
+					$product_name .= ' ' . __( '[Variable Product - Select variation below]', 'jump-to-checkout' );
 
 					$results[] = array(
 						'id'       => $product->get_id(),
@@ -490,55 +424,37 @@ class AdminPanel {
 					continue;
 				}
 
-				// Variations are only selectable in PRO.
 				if ( $product->is_type( 'variation' ) ) {
-					if ( Features::is_pro() ) {
-						// PRO: Show variation as selectable with indicator.
-						$product_name .= ' ' . __( '[Variation]', 'jump-to-checkout' );
+					$parent_id   = $product->get_parent_id();
+					$parent      = wc_get_product( $parent_id );
+					$parent_name = $parent ? $parent->get_name() : '';
+					$attributes  = wc_get_formatted_variation( $product, true, false );
 
-						$results[] = array(
-							'id'   => $product->get_id(),
-							'text' => wp_strip_all_tags( $product_name ),
-						);
-					} else {
-						// FREE: Disable variations.
-						$product_name .= ' ' . __( '[PRO: Variation]', 'jump-to-checkout' );
+					$display_name = $parent_name . ( $attributes ? ' - ' . $attributes : '' );
 
-						$results[] = array(
-							'id'       => $product->get_id(),
-							'text'     => wp_strip_all_tags( $product_name ),
-							'disabled' => true,
-						);
-					}
+					$result = array(
+						'id'           => $product->get_id(),
+						'text'         => wp_strip_all_tags( $display_name ),
+						'variation_id' => $product->get_id(),
+						'product_id'   => $parent_id,
+						'variation'    => $product->get_variation_attributes(),
+					);
+
+					$results[] = apply_filters( 'jptc_product_search_result', $result, $product );
 					continue;
 				}
 
-				// Simple products are always selectable.
-				$results[] = array(
+				$result    = array(
 					'id'   => $product->get_id(),
 					'text' => wp_strip_all_tags( $product_name ),
 				);
+				$results[] = apply_filters( 'jptc_product_search_result', $result, $product );
 			}
 			wp_reset_postdata();
 		}
 
+		$results = apply_filters( 'jptc_ajax_search_products', $results, $search );
+
 		wp_send_json( array( 'results' => $results ) );
 	}
-
-	/**
-	 * AJAX: Dismiss upgrade widget
-	 *
-	 * @return void
-	 */
-	public function ajax_dismiss_upgrade_widget() {
-		check_ajax_referer( 'jptc_dismiss_upgrade', 'nonce' );
-
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_send_json_error();
-		}
-
-		update_user_meta( get_current_user_id(), 'jptc_upgrade_widget_dismissed', true );
-		wp_send_json_success();
-	}
 }
-
