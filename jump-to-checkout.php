@@ -50,6 +50,8 @@ function jptc_plugin_init() {
 		new CLOSE\JumpToCheckout\Core\JumpToCheckout();
 		new CLOSE\JumpToCheckout\Admin\AdminPanel();
 		new CLOSE\JumpToCheckout\Admin\LinksManager();
+		new CLOSE\JumpToCheckout\Admin\AdvancedAnalytics();
+		new CLOSE\JumpToCheckout\Admin\RatingNotice();
 	}
 }
 
