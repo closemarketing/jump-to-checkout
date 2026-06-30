@@ -170,14 +170,18 @@ class AdvancedAnalytics {
 
 		$date_to_end = $date_to . ' 23:59:59';
 
+		// Links created in the selected date range (for timeline and top-links table).
 		$links = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE created_at >= %s AND created_at <= %s ORDER BY created_at DESC", $date_from, $date_to_end ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		$total_links       = count( $links );
+		// Global totals across all links regardless of creation date (visits/conversions are lifetime counters).
+		$all_links = $wpdb->get_results( "SELECT status, visits, conversions FROM {$table_name}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		$total_links       = count( $all_links );
 		$active_links      = 0;
 		$total_visits      = 0;
 		$total_conversions = 0;
 
-		foreach ( $links as $link ) {
+		foreach ( $all_links as $link ) {
 			if ( 'active' === $link->status ) {
 				++$active_links;
 			}

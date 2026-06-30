@@ -89,8 +89,8 @@ class RatingNotice {
 			return false;
 		}
 
-		$days_active         = ( time() - $installed ) / DAY_IN_SECONDS;
-		$this->show_cache    = $days_active >= self::DAYS_BEFORE_SHOW;
+		$days_active      = ( time() - $installed ) / DAY_IN_SECONDS;
+		$this->show_cache = $days_active >= self::DAYS_BEFORE_SHOW;
 		return $this->show_cache;
 	}
 
