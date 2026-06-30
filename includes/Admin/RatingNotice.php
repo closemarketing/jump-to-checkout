@@ -64,30 +64,34 @@ class RatingNotice {
 		}
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			return $this->show_cache = false;
+			$this->show_cache = false;
+			return false;
 		}
 
 		$dismissed = get_option( self::OPTION_DISMISSED );
 
 		// Permanently dismissed.
 		if ( 'yes' === $dismissed ) {
-			return $this->show_cache = false;
+			$this->show_cache = false;
+			return false;
 		}
 
 		// Snoozed: check if snooze period has passed.
 		if ( is_numeric( $dismissed ) && time() < (int) $dismissed ) {
-			return $this->show_cache = false;
+			$this->show_cache = false;
+			return false;
 		}
 
 		$installed = (int) get_option( self::OPTION_INSTALLED );
 
 		if ( ! $installed ) {
-			return $this->show_cache = false;
+			$this->show_cache = false;
+			return false;
 		}
 
-		$days_active = ( time() - $installed ) / DAY_IN_SECONDS;
-
-		return $this->show_cache = $days_active >= self::DAYS_BEFORE_SHOW;
+		$days_active         = ( time() - $installed ) / DAY_IN_SECONDS;
+		$this->show_cache    = $days_active >= self::DAYS_BEFORE_SHOW;
+		return $this->show_cache;
 	}
 
 	/**
