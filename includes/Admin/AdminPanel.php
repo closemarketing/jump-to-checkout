@@ -196,8 +196,8 @@ class AdminPanel {
 						</table>
 					</div>
 
-					<?php do_action( 'jptc_render_expiry_section', true ); ?>
-					<?php do_action( 'jptc_render_coupon_section', true ); ?>
+					<?php $this->render_expiry_section(); ?>
+					<?php $this->render_coupon_section(); ?>
 
 					<div class="jump-to-checkout-generate-section">
 						<button type="button" class="button button-primary button-large jump-to-checkout-generate-link">
@@ -273,6 +273,94 @@ class AdminPanel {
 			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render expiry section
+	 *
+	 * @return void
+	 */
+	private function render_expiry_section() {
+		?>
+		<div class="jump-to-checkout-expiry-section">
+			<h3><?php echo esc_html__( 'Link Expiry', 'jump-to-checkout' ); ?></h3>
+			<label>
+				<input type="radio" name="jptc_expiry_type" value="never" checked />
+				<?php echo esc_html__( 'Never expires', 'jump-to-checkout' ); ?>
+			</label>
+			<label>
+				<input type="radio" name="jptc_expiry_type" value="custom" />
+				<?php echo esc_html__( 'Expires in', 'jump-to-checkout' ); ?>
+				<input type="number" name="jptc_expiry_hours" value="24" min="1" />
+				<?php echo esc_html__( 'hours', 'jump-to-checkout' ); ?>
+			</label>
+			<p class="description">
+				<?php esc_html_e( 'Set when this link should expire. After expiration, the link will no longer work.', 'jump-to-checkout' ); ?>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render coupon section
+	 *
+	 * @return void
+	 */
+	private function render_coupon_section() {
+		$coupons = $this->get_available_coupons();
+		?>
+		<div class="jump-to-checkout-coupon-section">
+			<h3><?php echo esc_html__( 'Automatic Coupon', 'jump-to-checkout' ); ?></h3>
+			<label>
+				<?php echo esc_html__( 'Apply coupon code automatically:', 'jump-to-checkout' ); ?>
+				<select name="jptc_coupon_code">
+					<option value=""><?php echo esc_html__( 'None', 'jump-to-checkout' ); ?></option>
+					<?php foreach ( $coupons as $coupon_code => $coupon_name ) : ?>
+						<option value="<?php echo esc_attr( $coupon_code ); ?>">
+							<?php echo esc_html( $coupon_name ); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</label>
+			<p class="description">
+				<?php esc_html_e( 'Select a coupon code to automatically apply when customers click this link.', 'jump-to-checkout' ); ?>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Get available WooCommerce coupons
+	 *
+	 * @return array Array of coupon_code => label.
+	 */
+	private function get_available_coupons() {
+		if ( ! class_exists( 'WC_Coupon' ) ) {
+			return array();
+		}
+
+		$coupon_ids = get_posts(
+			array(
+				'post_type'        => 'shop_coupon',
+				'post_status'      => 'publish',
+				'posts_per_page'   => -1,
+				'fields'           => 'ids',
+				'suppress_filters' => false,
+			)
+		);
+
+		$result = array();
+		foreach ( array_unique( $coupon_ids ) as $coupon_id ) {
+			$coupon = new \WC_Coupon( $coupon_id );
+			if ( ! $coupon->get_id() ) {
+				continue;
+			}
+			$code            = $coupon->get_code();
+			$label           = $coupon->get_description() ? $coupon->get_description() : $code;
+			$result[ $code ] = $label . ' (' . $code . ')';
+		}
+
+		return $result;
 	}
 
 	/**
@@ -412,14 +500,12 @@ class AdminPanel {
 					$product_name .= ' (' . $product->get_sku() . ')';
 				}
 
-				// Variable products are never directly selectable; user must choose a variation.
+				// Variable products: selectable to trigger variation picker, but not directly addable.
 				if ( $product->is_type( 'variable' ) ) {
-					$product_name .= ' ' . __( '[Variable Product - Select variation below]', 'jump-to-checkout' );
-
 					$results[] = array(
-						'id'       => $product->get_id(),
-						'text'     => wp_strip_all_tags( $product_name ),
-						'disabled' => true,
+						'id'          => $product->get_id(),
+						'text'        => wp_strip_all_tags( $product_name ),
+						'is_variable' => true,
 					);
 					continue;
 				}

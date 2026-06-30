@@ -240,7 +240,11 @@
 		if (allSelected && variationData.variations) {
 			const matchingVariation = variationData.variations.find(function(variation) {
 				for (const attrName in selectedAttributes) {
-					if (variation.attributes[attrName] !== selectedAttributes[attrName]) {
+					const normalizedKey = attrName.startsWith('attribute_') ? attrName : 'attribute_' + attrName;
+					const variationValue = Object.prototype.hasOwnProperty.call(variation.attributes, normalizedKey)
+						? variation.attributes[normalizedKey]
+						: variation.attributes[attrName];
+					if (variationValue !== selectedAttributes[attrName]) {
 						return false;
 					}
 				}
@@ -373,9 +377,10 @@
 			return;
 		}
 
-		if (selectedOption.disabled || selectedOption.hasAttribute('disabled')) {
-			alert(jptcAdmin.i18n.variable_product_error);
-			jQuery('.jump-to-checkout-product-search').val(null).trigger('change');
+		// If a variable product parent is selected, wait for variation to be chosen.
+		const selectData = jQuery('.jump-to-checkout-product-search').select2('data');
+		const currentData = selectData && selectData[0] ? selectData[0] : {};
+		if (currentData.is_variable) {
 			return;
 		}
 

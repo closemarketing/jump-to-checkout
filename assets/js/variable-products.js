@@ -206,7 +206,12 @@
 			const matchingVariation = currentVariationData.variations.find(function(variation) {
 				let matches = true;
 				for (const attrName in selectedAttributes) {
-					if (variation.attributes[attrName] !== selectedAttributes[attrName]) {
+					// WC stores variation attributes prefixed with "attribute_"; normalise before comparing.
+					const normalizedKey = attrName.startsWith('attribute_') ? attrName : 'attribute_' + attrName;
+					const variationValue = Object.prototype.hasOwnProperty.call(variation.attributes, normalizedKey)
+						? variation.attributes[normalizedKey]
+						: variation.attributes[attrName];
+					if (variationValue !== selectedAttributes[attrName]) {
 						matches = false;
 						break;
 					}

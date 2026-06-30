@@ -150,7 +150,15 @@ class LinksManager {
 			</div>
 
 			<div class="jump-to-checkout-toolbar">
-				<?php do_action( 'jptc_admin_export_button' ); ?>
+				<?php
+				$export_url = wp_nonce_url(
+					add_query_arg( array( 'jptc_export' => 'csv' ), admin_url( 'admin.php?page=jptc-manage-links' ) ),
+					'jptc_export_csv'
+				);
+				?>
+				<a href="<?php echo esc_url( $export_url ); ?>" class="button">
+					<?php echo esc_html__( 'Export to CSV', 'jump-to-checkout' ); ?>
+				</a>
 			</div>
 
 			<table class="wp-list-table widefat fixed striped jump-to-checkout-links-table">

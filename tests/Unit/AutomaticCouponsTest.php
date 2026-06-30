@@ -130,10 +130,6 @@ class Test_AutomaticCoupons extends WP_UnitTestCase {
 		);
 		$this->assertGreaterThan(
 			0,
-			has_action( 'jptc_render_coupon_section', array( $this->automatic_coupons, 'render_coupon_section' ) )
-		);
-		$this->assertGreaterThan(
-			0,
 			has_filter( 'jptc_ajax_link_data', array( $this->automatic_coupons, 'save_coupon_from_ajax' ) )
 		);
 		$this->assertGreaterThan(
