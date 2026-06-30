@@ -55,6 +55,7 @@ function jptc_plugin_init() {
 		new CLOSE\JumpToCheckout\Admin\AdminPanel();
 		new CLOSE\JumpToCheckout\Admin\LinksManager();
 		new CLOSE\JumpToCheckout\Admin\AdvancedAnalytics();
+		new CLOSE\JumpToCheckout\Admin\RatingNotice();
 	}
 }
 
@@ -77,6 +78,9 @@ function jptc_plugin_activate() {
 	// Create instance to register rewrite rules.
 	$checkout = new CLOSE\JumpToCheckout\Core\JumpToCheckout();
 	$checkout->add_rewrite_rules();
+
+	// Record installation date for rating notice.
+	CLOSE\JumpToCheckout\Admin\RatingNotice::record_installation();
 
 	// Flush rewrite rules.
 	flush_rewrite_rules();
