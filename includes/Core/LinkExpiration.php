@@ -30,7 +30,6 @@ class LinkExpiration {
 		add_filter( 'jptc_link_is_expired', array( $this, 'check_link_expired' ), 10, 2 );
 		add_filter( 'jptc_token_expiry_check', array( $this, 'check_token_expiry' ), 10, 2 );
 		add_filter( 'jptc_ajax_link_expiry', array( $this, 'get_ajax_expiry' ), 10, 2 );
-		add_action( 'jptc_render_expiry_section', array( $this, 'render_expiry_section' ), 10, 1 );
 	}
 
 	/**
@@ -42,7 +41,7 @@ class LinkExpiration {
 	 */
 	public function get_ajax_expiry( $expiry, $post_data ) {
 		if ( isset( $post_data['expiry'] ) ) {
-			$expiry = absint( $post_data['expiry'] );
+			$expiry = max( 0, (int) $post_data['expiry'] );
 		}
 		return $expiry;
 	}
@@ -136,30 +135,4 @@ class LinkExpiration {
 		return false;
 	}
 
-	/**
-	 * Render expiry section in admin
-	 *
-	 * @param bool $can_create Whether user can create links.
-	 * @return void
-	 */
-	public function render_expiry_section( $can_create ) {
-		?>
-		<div class="jump-to-checkout-expiry-section">
-			<h3><?php echo esc_html__( 'Link Expiry', 'jump-to-checkout' ); ?></h3>
-			<label>
-				<input type="radio" name="jptc_expiry_type" value="never" checked <?php echo ! $can_create ? 'disabled' : ''; ?> />
-				<?php echo esc_html__( 'Never expires', 'jump-to-checkout' ); ?>
-			</label>
-			<label>
-				<input type="radio" name="jptc_expiry_type" value="custom" <?php echo ! $can_create ? 'disabled' : ''; ?> />
-				<?php echo esc_html__( 'Expires in', 'jump-to-checkout' ); ?>
-				<input type="number" name="jptc_expiry_hours" value="24" min="1" <?php echo ! $can_create ? 'disabled' : ''; ?> />
-				<?php echo esc_html__( 'hours', 'jump-to-checkout' ); ?>
-			</label>
-			<p class="description">
-				<?php esc_html_e( 'Set when this link should expire. After expiration, the link will no longer work.', 'jump-to-checkout' ); ?>
-			</p>
-		</div>
-		<?php
-	}
 }
