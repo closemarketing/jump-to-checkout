@@ -129,12 +129,12 @@ class Test_JumpToCheckout extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test generate link expiry is always 0 in FREE version
+	 * Test generate link with expiry stores expiry_hours in database
 	 *
 	 * @return void
 	 */
-	public function test_generate_link_no_expiry_free() {
-		$name     = 'Test No Expiry';
+	public function test_generate_link_with_expiry() {
+		$name     = 'Test With Expiry';
 		$products = array(
 			array(
 				'product_id' => 1,
@@ -144,16 +144,14 @@ class Test_JumpToCheckout extends WP_UnitTestCase {
 
 		$result = $this->jump_to_checkout->generate_link( $name, $products, 24 );
 
-		// Verify link was created.
 		$this->assertIsArray( $result );
 
-		// Verify expiry is 0 in database (FREE version).
 		$db   = new Database();
 		$link = $db->get_link_by_token( $result['token'] );
 
 		$this->assertIsObject( $link );
-		$this->assertEquals( 0, $link->expiry_hours );
-		$this->assertNull( $link->expires_at );
+		$this->assertEquals( 24, $link->expiry_hours );
+		$this->assertNotNull( $link->expires_at );
 	}
 
 	/**
