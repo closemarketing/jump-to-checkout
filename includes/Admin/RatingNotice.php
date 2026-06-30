@@ -88,7 +88,6 @@ class RatingNotice {
 			return;
 		}
 
-		$review_url = esc_url( self::REVIEW_URL );
 		?>
 		<div class="notice notice-info jptc-rating-notice" style="display:flex;align-items:center;gap:16px;padding:12px 16px;">
 			<span style="font-size:32px;line-height:1;">⭐</span>
@@ -98,7 +97,7 @@ class RatingNotice {
 					<?php esc_html_e( 'If the plugin is working well for you, we\'d really appreciate a quick review on WordPress.org. It only takes a minute!', 'jump-to-checkout' ); ?>
 				</p>
 				<p style="margin:0;display:flex;gap:12px;flex-wrap:wrap;">
-					<a href="<?php echo $review_url; ?>" target="_blank" rel="noopener noreferrer" class="button button-primary jptc-rating-action" data-action="yes">
+					<a href="<?php echo esc_url( self::REVIEW_URL ); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary jptc-rating-action" data-action="yes">
 						⭐ <?php esc_html_e( 'Rate it now!', 'jump-to-checkout' ); ?>
 					</a>
 					<button type="button" class="button jptc-rating-action" data-action="snooze">
