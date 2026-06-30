@@ -2,7 +2,7 @@
 /**
  * Links Manager Class
  *
- * Handles the links management page - FREE VERSION
+ * Handles the links management page
  *
  * @package    CLOSE\JumpToCheckout\Admin
  * @author     Close Marketing
@@ -11,8 +11,6 @@
  */
 
 namespace CLOSE\JumpToCheckout\Admin;
-
-use CLOSE\JumpToCheckout\Core\Features;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,7 +22,7 @@ class LinksManager {
 	/**
 	 * Database instance
 	 *
-	 * @var Database
+	 * @var \CLOSE\JumpToCheckout\Database\Database $db
 	 */
 	private $db;
 
@@ -34,13 +32,8 @@ class LinksManager {
 	public function __construct() {
 		$this->db = new \CLOSE\JumpToCheckout\Database\Database();
 
-		// Add admin menu.
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
-
-		// Enqueue admin scripts.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
-
-		// Handle AJAX requests.
 		add_action( 'wp_ajax_jptc_delete_link', array( $this, 'ajax_delete_link' ) );
 		add_action( 'wp_ajax_jptc_toggle_status', array( $this, 'ajax_toggle_status' ) );
 	}
@@ -156,17 +149,9 @@ class LinksManager {
 				</div>
 			</div>
 
-			<?php if ( ! Features::is_pro() && ! Features::can_export() ) : ?>
-				<div class="jump-to-checkout-upgrade-banner" style="background: #f0f6fc; border-left: 4px solid #2271b1; padding: 15px; margin: 20px 0; border-radius: 4px;">
-					<p style="margin: 0;">
-						<strong>📊 <?php esc_html_e( 'Need to export this data?', 'jump-to-checkout' ); ?></strong>
-						<?php esc_html_e( 'With the PRO version you can export all statistics to CSV/Excel and access advanced analytics with charts.', 'jump-to-checkout' ); ?>
-						<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary" style="margin-left: 10px;" target="_blank">
-							<?php esc_html_e( 'Upgrade to PRO', 'jump-to-checkout' ); ?>
-						</a>
-					</p>
-				</div>
-			<?php endif; ?>
+			<div class="jump-to-checkout-toolbar">
+				<?php do_action( 'jptc_admin_export_button' ); ?>
+			</div>
 
 			<table class="wp-list-table widefat fixed striped jump-to-checkout-links-table">
 				<thead>
@@ -240,19 +225,6 @@ class LinksManager {
 					<?php endif; ?>
 				</tbody>
 			</table>
-
-			<?php if ( ! Features::is_pro() ) : ?>
-				<div class="jump-to-checkout-free-footer" style="margin-top: 30px; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
-					<p style="margin: 0 0 10px 0;"><strong><?php esc_html_e( 'You are using Jump to Checkout FREE', 'jump-to-checkout' ); ?></strong></p>
-					<p style="margin: 0 0 15px 0; color: #666; font-size: 13px;">
-						<?php esc_html_e( 'Developed by Close Technology', 'jump-to-checkout' ); ?> | 
-						<a href="https://close.technology" target="_blank">close.technology</a>
-					</p>
-					<a href="<?php echo esc_url( Features::get_upgrade_url() ); ?>" class="button button-primary" target="_blank">
-						<?php esc_html_e( 'Upgrade to PRO for all features', 'jump-to-checkout' ); ?>
-					</a>
-				</div>
-			<?php endif; ?>
 		</div>
 		<?php
 	}
@@ -314,4 +286,3 @@ class LinksManager {
 		}
 	}
 }
-

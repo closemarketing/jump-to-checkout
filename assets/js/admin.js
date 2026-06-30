@@ -39,6 +39,18 @@
 			minimumInputLength: 2,
 			placeholder: jptcAdmin.i18n.search_placeholder
 		});
+
+		// When a product is selected, check for variable product.
+		jQuery('.jump-to-checkout-product-search').on('select2:select', function(e) {
+			const data = e.params.data;
+			if (typeof window.jptcGetSelectedVariation !== 'undefined' && data.id) {
+				checkIfVariableProduct(data.id, data);
+			}
+		});
+
+		jQuery('.jump-to-checkout-product-search').on('select2:clear', function() {
+			hideVariationSelector();
+		});
 	}
 
 	/**
@@ -48,6 +60,7 @@
 		const addProductBtn = document.querySelector('.jump-to-checkout-add-product');
 		const generateLinkBtn = document.querySelector('.jump-to-checkout-generate-link');
 		const copyLinkBtn = document.querySelector('.jump-to-checkout-copy-link');
+
 		if (addProductBtn) {
 			addProductBtn.addEventListener('click', handleAddProduct);
 		}
@@ -60,18 +73,262 @@
 			copyLinkBtn.addEventListener('click', handleCopyLink);
 		}
 
-		// Expiry handling is done by PRO plugin if active.
 		const expiryRadios = document.querySelectorAll('input[name="jptc_expiry_type"]');
 		const expiryHoursInput = document.querySelector('input[name="jptc_expiry_hours"]');
-		if (expiryRadios.length > 0) {
+		if (expiryRadios.length > 0 && expiryHoursInput) {
+			expiryHoursInput.disabled = true;
 			expiryRadios.forEach(function(radio) {
 				radio.addEventListener('change', function() {
-					if (expiryHoursInput) {
-						expiryHoursInput.disabled = this.value !== 'custom';
-					}
+					expiryHoursInput.disabled = this.value !== 'custom';
 				});
 			});
 		}
+	}
+
+	/**
+	 * Check if selected product is variable and show variation selector
+	 */
+	function checkIfVariableProduct(productId, selectData) {
+		if (selectData && selectData.variation_id) {
+			return;
+		}
+
+		hideVariationSelector();
+
+		const url = new URL(jptcAdmin.ajax_url);
+		url.searchParams.append('action', 'jptc_get_product_variations');
+		url.searchParams.append('product_id', productId);
+		url.searchParams.append('nonce', jptcAdmin.nonce);
+
+		fetch(url.toString())
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(response) {
+				if (response.success && response.data && response.data.attributes && Object.keys(response.data.attributes).length > 0) {
+					showVariationSelector(productId, response.data);
+				}
+			})
+			.catch(function(error) {
+				console.error('Error checking product:', error);
+			});
+	}
+
+	/**
+	 * Show variation selector
+	 */
+	function showVariationSelector(productId, data) {
+		let selector = document.querySelector('.jptc-variation-selector');
+
+		if (!selector) {
+			selector = createVariationSelector(productId, data);
+			const productRow = document.querySelector('.jump-to-checkout-product-row');
+			if (productRow && productRow.parentNode) {
+				productRow.parentNode.insertBefore(selector, productRow.nextSibling);
+			}
+		} else {
+			selector.setAttribute('data-product-id', productId);
+			updateVariationSelector(selector, data);
+		}
+
+		selector.dataset.productId = productId;
+		selector.dataset.variationData = JSON.stringify(data);
+		selector.style.display = 'block';
+	}
+
+	/**
+	 * Create variation selector HTML
+	 */
+	function createVariationSelector(productId, data) {
+		const container = document.createElement('div');
+		container.className = 'jptc-variation-selector';
+		container.setAttribute('data-product-id', productId);
+
+		let html = '<h4>' + escapeHtml(jptcAdmin.i18n.select_variation || 'Select Variation') + '</h4>';
+		html += '<div class="jptc-variation-attributes">';
+
+		for (const attributeName in data.attributes) {
+			if (!Object.prototype.hasOwnProperty.call(data.attributes, attributeName)) {
+				continue;
+			}
+			const options = data.attributes[attributeName];
+			const attributeSlug = attributeName.replace('attribute_', '').replace('pa_', '');
+			html += '<div class="jptc-variation-attribute">';
+			html += '<label>';
+			html += escapeHtml(attributeName.replace('attribute_', '').replace('pa_', '').replace(/_/g, ' ')) + ': ';
+			html += '<select name="jptc_variation_' + attributeSlug + '" class="jptc-variation-select" data-attribute="' + escapeHtml(attributeName) + '">';
+			html += '<option value="">' + escapeHtml(jptcAdmin.i18n.choose_option || 'Choose an option') + '</option>';
+			for (let i = 0; i < options.length; i++) {
+				html += '<option value="' + escapeHtml(options[i]) + '">' + escapeHtml(options[i]) + '</option>';
+			}
+			html += '</select></label></div>';
+		}
+
+		html += '</div>';
+		html += '<div class="jptc-variation-selected" style="display: none;">';
+		html += '<p class="description">' + escapeHtml(jptcAdmin.i18n.selected_variation || 'Selected variation:') + ' ';
+		html += '<span class="jptc-selected-variation-name"></span></p>';
+		html += '<input type="hidden" class="jptc-selected-variation-id" value="" />';
+		html += '</div>';
+
+		container.innerHTML = html;
+
+		container.addEventListener('change', function(e) {
+			if (e.target.classList.contains('jptc-variation-select')) {
+				handleVariationAttributeChange(container);
+			}
+		});
+
+		return container;
+	}
+
+	/**
+	 * Update variation selector with new data
+	 */
+	function updateVariationSelector(selector, data) {
+		const attributesContainer = selector.querySelector('.jptc-variation-attributes');
+		if (!attributesContainer) {
+			return;
+		}
+
+		attributesContainer.innerHTML = '';
+
+		for (const attributeName in data.attributes) {
+			if (!Object.prototype.hasOwnProperty.call(data.attributes, attributeName)) {
+				continue;
+			}
+			const options = data.attributes[attributeName];
+			const attributeSlug = attributeName.replace('attribute_', '').replace('pa_', '');
+			const div = document.createElement('div');
+			div.className = 'jptc-variation-attribute';
+			div.innerHTML = '<label>' +
+				escapeHtml(attributeName.replace('attribute_', '').replace('pa_', '').replace(/_/g, ' ')) + ': ' +
+				'<select name="jptc_variation_' + attributeSlug + '" class="jptc-variation-select" data-attribute="' + escapeHtml(attributeName) + '">' +
+				'<option value="">' + escapeHtml(jptcAdmin.i18n.choose_option || 'Choose an option') + '</option>' +
+				options.map(function(opt) {
+					return '<option value="' + escapeHtml(opt) + '">' + escapeHtml(opt) + '</option>';
+				}).join('') +
+				'</select></label>';
+			attributesContainer.appendChild(div);
+		}
+	}
+
+	/**
+	 * Handle variation attribute change
+	 */
+	function handleVariationAttributeChange(container) {
+		const variationDataStr = container.dataset.variationData;
+		if (!variationDataStr) {
+			return;
+		}
+
+		const variationData = JSON.parse(variationDataStr);
+		const selectedAttributes = {};
+		const selects = container.querySelectorAll('.jptc-variation-select');
+		let allSelected = true;
+
+		selects.forEach(function(select) {
+			const attributeName = select.getAttribute('data-attribute');
+			const value = select.value;
+			if (value) {
+				selectedAttributes[attributeName] = value;
+			} else {
+				allSelected = false;
+			}
+		});
+
+		if (allSelected && variationData.variations) {
+			const matchingVariation = variationData.variations.find(function(variation) {
+				for (const attrName in selectedAttributes) {
+					if (variation.attributes[attrName] !== selectedAttributes[attrName]) {
+						return false;
+					}
+				}
+				return true;
+			});
+
+			if (matchingVariation) {
+				showSelectedVariation(container, matchingVariation);
+			} else {
+				hideSelectedVariation(container);
+			}
+		} else {
+			hideSelectedVariation(container);
+		}
+	}
+
+	/**
+	 * Show selected variation
+	 */
+	function showSelectedVariation(container, variation) {
+		const selectedDiv = container.querySelector('.jptc-variation-selected');
+		const nameSpan = container.querySelector('.jptc-selected-variation-name');
+		const idInput = container.querySelector('.jptc-selected-variation-id');
+
+		if (selectedDiv && nameSpan && idInput) {
+			const attributeNames = Object.values(variation.attributes);
+			nameSpan.textContent = attributeNames.join(' - ');
+			idInput.value = variation.variation_id;
+			selectedDiv.style.display = 'block';
+		}
+	}
+
+	/**
+	 * Hide selected variation
+	 */
+	function hideSelectedVariation(container) {
+		if (!container) {
+			return;
+		}
+		const selectedDiv = container.querySelector('.jptc-variation-selected');
+		if (selectedDiv) {
+			selectedDiv.style.display = 'none';
+		}
+	}
+
+	/**
+	 * Hide variation selector
+	 */
+	function hideVariationSelector() {
+		const selector = document.querySelector('.jptc-variation-selector');
+		if (selector) {
+			selector.style.display = 'none';
+		}
+	}
+
+	/**
+	 * Get selected variation data from the visible selector
+	 */
+	function getSelectedVariationData() {
+		const selector = document.querySelector('.jptc-variation-selector');
+		if (!selector || selector.style.display === 'none') {
+			return null;
+		}
+
+		const idInput = selector.querySelector('.jptc-selected-variation-id');
+		if (!idInput || !idInput.value) {
+			return null;
+		}
+
+		const variationId = parseInt(idInput.value);
+		if (!variationId) {
+			return null;
+		}
+
+		const productId = selector.getAttribute('data-product-id');
+		const variation = {};
+		selector.querySelectorAll('.jptc-variation-select').forEach(function(select) {
+			const attributeName = select.getAttribute('data-attribute');
+			if (select.value) {
+				variation[attributeName] = select.value;
+			}
+		});
+
+		return {
+			product_id: productId,
+			variation_id: variationId,
+			variation: variation
+		};
 	}
 
 	/**
@@ -85,29 +342,48 @@
 			return;
 		}
 
+		const quantity = parseInt(quantityInput.value) || 1;
+
+		// Check if a variation is selected in the variation selector.
+		const variationData = getSelectedVariationData();
+		if (variationData) {
+			const variationIdInput = document.querySelector('.jptc-selected-variation-id');
+			const variationNameSpan = document.querySelector('.jptc-selected-variation-name');
+			const productName = variationNameSpan ? variationNameSpan.textContent : 'Variation';
+
+			selectedProducts.push({
+				product_id: variationData.product_id,
+				variation_id: variationData.variation_id,
+				variation: variationData.variation,
+				name: productName,
+				quantity: quantity
+			});
+
+			renderSelectedProducts();
+			hideVariationSelector();
+			jQuery('.jump-to-checkout-product-search').val(null).trigger('change');
+			quantityInput.value = 1;
+			return;
+		}
+
 		const selectedOption = select.options[select.selectedIndex];
-		
+
 		if (!selectedOption || !selectedOption.value) {
 			alert(jptcAdmin.i18n.no_products);
 			return;
 		}
 
-		// Check if product is disabled (variable product).
 		if (selectedOption.disabled || selectedOption.hasAttribute('disabled')) {
-			alert(jptcAdmin.i18n.variable_product_error || 'Variable products cannot be added directly. Please select a specific variation.');
-			// Reset select2.
+			alert(jptcAdmin.i18n.variable_product_error);
 			jQuery('.jump-to-checkout-product-search').val(null).trigger('change');
 			return;
 		}
 
 		const productId = selectedOption.value;
-		// Strip HTML tags from product name.
 		const productName = stripHtml(selectedOption.text);
-		const quantity = parseInt(quantityInput.value) || 1;
 
-		// Check if product already exists.
 		const existingIndex = selectedProducts.findIndex(function(p) {
-			return p.product_id === productId;
+			return p.product_id === productId && !p.variation_id;
 		});
 
 		if (existingIndex !== -1) {
@@ -121,8 +397,6 @@
 		}
 
 		renderSelectedProducts();
-
-		// Reset select2.
 		jQuery('.jump-to-checkout-product-search').val(null).trigger('change');
 		quantityInput.value = 1;
 	}
@@ -132,7 +406,7 @@
 	 */
 	function renderSelectedProducts() {
 		const tbody = document.querySelector('.jump-to-checkout-selected-products-body');
-		
+
 		if (!tbody) {
 			return;
 		}
@@ -148,13 +422,12 @@
 			const row = document.createElement('tr');
 			row.innerHTML = '<td class="jump-to-checkout-product-name">' + escapeHtml(product.name) + '</td>' +
 				'<td>' + product.quantity + '</td>' +
-				'<td><button type="button" class="button button-small jump-to-checkout-remove-product" data-index="' + 
+				'<td><button type="button" class="button button-small jump-to-checkout-remove-product" data-index="' +
 				index + '">' + escapeHtml(jptcAdmin.i18n.remove_button) + '</button></td>';
-			
+
 			tbody.appendChild(row);
 		});
 
-		// Add event listeners to remove buttons.
 		document.querySelectorAll('.jump-to-checkout-remove-product').forEach(function(btn) {
 			btn.addEventListener('click', function() {
 				const index = parseInt(this.getAttribute('data-index'));
@@ -169,10 +442,12 @@
 	 */
 	function handleGenerateLink() {
 		const linkName = document.querySelector('.jump-to-checkout-link-name');
-		
+
 		if (!linkName || !linkName.value.trim()) {
 			alert(jptcAdmin.i18n.no_link_name);
-			linkName.focus();
+			if (linkName) {
+				linkName.focus();
+			}
 			return;
 		}
 
@@ -181,7 +456,6 @@
 			return;
 		}
 
-		// Expiry is handled by PRO plugin if active.
 		let expiry = 0;
 		const expiryType = document.querySelector('input[name="jptc_expiry_type"]:checked');
 		const expiryHours = document.querySelector('input[name="jptc_expiry_hours"]');
@@ -189,12 +463,18 @@
 			expiry = parseInt(expiryHours.value) || 0;
 		}
 
+		const couponSelect = document.querySelector('select[name="jptc_coupon_code"]');
+		const couponCode = couponSelect ? couponSelect.value : '';
+
 		const data = new FormData();
 		data.append('action', 'jptc_generate_link');
 		data.append('nonce', jptcAdmin.nonce);
 		data.append('name', linkName.value.trim());
 		data.append('products', JSON.stringify(selectedProducts));
 		data.append('expiry', expiry);
+		if (couponCode) {
+			data.append('coupon_code', couponCode);
+		}
 
 		fetch(jptcAdmin.ajax_url, {
 			method: 'POST',
@@ -204,30 +484,29 @@
 			return response.json();
 		})
 		.then(function(response) {
-			console.log('Response:', response); // Debug log.
-			
 			if (response.success) {
 				const link = response.data.link;
 				if (link) {
 					displayGeneratedLink(link);
-					// Reset form.
 					linkName.value = '';
 					selectedProducts.length = 0;
 					renderSelectedProducts();
+					if (couponSelect) {
+						couponSelect.value = '';
+					}
+					const expiryNeverRadio = document.querySelector('input[name="jptc_expiry_type"][value="never"]');
+					if (expiryNeverRadio) {
+						expiryNeverRadio.checked = true;
+						if (expiryHours) {
+							expiryHours.disabled = true;
+						}
+					}
 				} else {
 					alert(jptcAdmin.i18n.no_link_in_response);
 				}
 			} else {
 				const errorMessage = (response.data && response.data.message) ? response.data.message : jptcAdmin.i18n.generate_error;
-				
-				// If it's a limit error and there's an upgrade URL, show upgrade option.
-				if (response.data && response.data.upgrade_url) {
-					if (confirm(errorMessage + '\n\n' + jptcAdmin.i18n.upgrade_confirm)) {
-						window.open(response.data.upgrade_url, '_blank');
-					}
-				} else {
-					alert(errorMessage);
-				}
+				alert(errorMessage);
 			}
 		})
 		.catch(function(error) {
@@ -244,17 +523,12 @@
 		const linkInput = document.querySelector('.jump-to-checkout-generated-link');
 
 		if (!resultSection || !linkInput) {
-			console.error('Result section elements not found');
 			return;
 		}
 
 		linkInput.value = link;
 		resultSection.style.display = 'block';
-		
-		// Scroll to result.
 		resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-		
-		// Select the link.
 		linkInput.select();
 	}
 
@@ -263,19 +537,18 @@
 	 */
 	function handleCopyLink() {
 		const linkInput = document.querySelector('.jump-to-checkout-generated-link');
-		
+
 		if (!linkInput) {
 			return;
 		}
 
 		linkInput.select();
-		linkInput.setSelectionRange(0, 99999); // For mobile devices.
+		linkInput.setSelectionRange(0, 99999);
 
 		try {
 			document.execCommand('copy');
 			showCopySuccess();
 		} catch (err) {
-			// Fallback to Clipboard API.
 			navigator.clipboard.writeText(linkInput.value).then(function() {
 				showCopySuccess();
 			}).catch(function() {
@@ -290,7 +563,7 @@
 	function showCopySuccess() {
 		const copyBtn = document.querySelector('.jump-to-checkout-copy-link');
 		const originalText = copyBtn.textContent;
-		
+
 		copyBtn.textContent = jptcAdmin.i18n.copy_success;
 		copyBtn.disabled = true;
 
@@ -311,7 +584,7 @@
 			'"': '&quot;',
 			"'": '&#039;'
 		};
-		return text.replace(/[&<>"']/g, function(m) {
+		return String(text).replace(/[&<>"']/g, function(m) {
 			return map[m];
 		});
 	}
@@ -324,21 +597,4 @@
 		tmp.innerHTML = html;
 		return tmp.textContent || tmp.innerText || '';
 	}
-
-	/**
-	 * Handle upgrade widget dismiss
-	 */
-	if (typeof jQuery !== 'undefined') {
-		jQuery(document).ready(function($) {
-			$('.jump-to-checkout-dismiss-upgrade').on('click', function() {
-				var $widget = $(this).closest('.jump-to-checkout-upgrade-widget');
-				$.post(ajaxurl, {
-					action: 'jptc_dismiss_upgrade_widget',
-					nonce: jptcAdmin.dismissNonce
-				});
-				$widget.fadeOut();
-			});
-		});
-	}
 })();
-
