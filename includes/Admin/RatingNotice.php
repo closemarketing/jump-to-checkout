@@ -94,18 +94,18 @@ class RatingNotice {
 			<span style="font-size:32px;line-height:1;">⭐</span>
 			<div style="flex:1;">
 				<p style="margin:0 0 8px;font-size:14px;">
-					<strong><?php esc_html_e( '¡Gracias por usar Jump to Checkout!', 'jump-to-checkout' ); ?></strong><br>
-					<?php esc_html_e( 'Si el plugin te está siendo útil, nos ayudaría mucho que lo puntuaras en WordPress.org. ¡Solo tarda un minuto!', 'jump-to-checkout' ); ?>
+					<strong><?php esc_html_e( 'Enjoying Jump to Checkout?', 'jump-to-checkout' ); ?></strong><br>
+					<?php esc_html_e( 'If the plugin is working well for you, we\'d really appreciate a quick review on WordPress.org. It only takes a minute!', 'jump-to-checkout' ); ?>
 				</p>
 				<p style="margin:0;display:flex;gap:12px;flex-wrap:wrap;">
 					<a href="<?php echo $review_url; ?>" target="_blank" rel="noopener noreferrer" class="button button-primary jptc-rating-action" data-action="yes">
-						⭐ <?php esc_html_e( '¡Puntuar ahora!', 'jump-to-checkout' ); ?>
+						⭐ <?php esc_html_e( 'Rate it now!', 'jump-to-checkout' ); ?>
 					</a>
 					<button type="button" class="button jptc-rating-action" data-action="snooze">
-						🕐 <?php esc_html_e( 'Recuérdamelo en 3 meses', 'jump-to-checkout' ); ?>
+						🕐 <?php esc_html_e( 'Remind me in 3 months', 'jump-to-checkout' ); ?>
 					</button>
 					<button type="button" class="button-link jptc-rating-action" data-action="yes" style="align-self:center;color:#999;">
-						<?php esc_html_e( 'Ya lo hice', 'jump-to-checkout' ); ?>
+						<?php esc_html_e( 'I already did', 'jump-to-checkout' ); ?>
 					</button>
 				</p>
 			</div>
