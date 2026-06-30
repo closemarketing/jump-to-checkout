@@ -134,5 +134,4 @@ class LinkExpiration {
 	public function check_token_expiry( $is_valid, $data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		return false;
 	}
-
 }

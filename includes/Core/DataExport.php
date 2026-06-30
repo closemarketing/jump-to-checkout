@@ -114,5 +114,4 @@ class DataExport {
 		fclose( $output ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		exit;
 	}
-
 }
