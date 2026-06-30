@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Jump to Checkout
- * Plugin URI:  https://close.technology/wordpress-plugins/jump-to-checkout-pro/
+ * Plugin URI:  https://close.technology/en/services/custom-development/
  * Description: Generate direct checkout links with pre-selected products for WooCommerce.
- * Version:     1.1.0-rc.1
- * Author:      Close Marketing
- * Author URI:  https://close.marketing
+ * Version:     1.0.2
+ * Author:      Close Technology
+ * Author URI:  https://close.technology
  * Text Domain: jump-to-checkout
  * Domain Path: /languages
  * License:     GPL-2.0+
@@ -13,8 +13,8 @@
  * Requires Plugins: woocommerce
  *
  * @package     WordPress
- * @author      Close Marketing
- * @copyright   2026 Closemarketing
+ * @author      Close Technology
+ * @copyright   2026 CloseTechnology
  * @license     GPL-2.0+
  *
  * @wordpress-plugin
@@ -24,7 +24,7 @@
 
 defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
-define( 'JTPC_VERSION', '1.1.0-rc.1' );
+define( 'JTPC_VERSION', '1.0.2' );
 define( 'JTPC_PLUGIN', __FILE__ );
 define( 'JTPC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'JTPC_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
@@ -48,14 +48,8 @@ function jptc_plugin_init() {
 		$db->maybe_create_table();
 
 		new CLOSE\JumpToCheckout\Core\JumpToCheckout();
-		new CLOSE\JumpToCheckout\Core\LinkExpiration();
-		new CLOSE\JumpToCheckout\Core\VariableProducts();
-		new CLOSE\JumpToCheckout\Core\AutomaticCoupons();
-		new CLOSE\JumpToCheckout\Core\DataExport();
 		new CLOSE\JumpToCheckout\Admin\AdminPanel();
 		new CLOSE\JumpToCheckout\Admin\LinksManager();
-		new CLOSE\JumpToCheckout\Admin\AdvancedAnalytics();
-		new CLOSE\JumpToCheckout\Admin\RatingNotice();
 	}
 }
 
@@ -78,9 +72,6 @@ function jptc_plugin_activate() {
 	// Create instance to register rewrite rules.
 	$checkout = new CLOSE\JumpToCheckout\Core\JumpToCheckout();
 	$checkout->add_rewrite_rules();
-
-	// Record installation date for rating notice.
-	CLOSE\JumpToCheckout\Admin\RatingNotice::record_installation();
 
 	// Flush rewrite rules.
 	flush_rewrite_rules();
