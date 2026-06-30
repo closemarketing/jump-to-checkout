@@ -8,6 +8,7 @@
 namespace CLOSE\JumpToCheckout\Tests;
 
 use CLOSE\JumpToCheckout\Core\JumpToCheckout;
+use CLOSE\JumpToCheckout\Core\LinkExpiration;
 use CLOSE\JumpToCheckout\Database\Database;
 use WP_UnitTestCase;
 
@@ -34,6 +35,9 @@ class Test_JumpToCheckout extends WP_UnitTestCase {
 		// Create database table.
 		$db = new Database();
 		$db->create_table();
+
+		// Register expiry filters so generate_link() persists expiry_hours correctly.
+		new LinkExpiration();
 
 		// Create instance (this will register hooks, which is fine for tests).
 		$this->jump_to_checkout = new JumpToCheckout();

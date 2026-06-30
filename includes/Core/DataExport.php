@@ -24,7 +24,6 @@ class DataExport {
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'handle_export_request' ) );
-		add_action( 'jptc_admin_export_button', array( $this, 'render_export_button' ) );
 	}
 
 	/**
@@ -116,20 +115,4 @@ class DataExport {
 		exit;
 	}
 
-	/**
-	 * Render export button
-	 *
-	 * @return void
-	 */
-	public function render_export_button() {
-		$export_url = wp_nonce_url(
-			add_query_arg( array( 'jptc_export' => 'csv' ), admin_url( 'admin.php?page=jptc-manage-links' ) ),
-			'jptc_export_csv'
-		);
-		?>
-		<a href="<?php echo esc_url( $export_url ); ?>" class="button">
-			<?php echo esc_html__( 'Export to CSV', 'jump-to-checkout' ); ?>
-		</a>
-		<?php
-	}
 }

@@ -168,7 +168,9 @@ class AdvancedAnalytics {
 		$date_from = isset( $_GET['date_from'] ) ? sanitize_text_field( wp_unslash( $_GET['date_from'] ) ) : gmdate( 'Y-m-d', strtotime( '-30 days' ) );
 		$date_to   = isset( $_GET['date_to'] ) ? sanitize_text_field( wp_unslash( $_GET['date_to'] ) ) : gmdate( 'Y-m-d' );
 
-		$links = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE created_at >= %s AND created_at <= %s ORDER BY created_at DESC", $date_from, $date_to ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$date_to_end = $date_to . ' 23:59:59';
+
+		$links = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE created_at >= %s AND created_at <= %s ORDER BY created_at DESC", $date_from, $date_to_end ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$total_links       = count( $links );
 		$active_links      = 0;

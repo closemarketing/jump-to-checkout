@@ -20,6 +20,46 @@ defined( 'ABSPATH' ) || exit;
  */
 class Features {
 
+	/** @return true */
+	public static function is_pro() {
+		return true;
+	}
+
+	/** @return string */
+	public static function get_upgrade_url() {
+		return '';
+	}
+
+	/** @return true */
+	public static function can_export() {
+		return true;
+	}
+
+	/** @return true */
+	public static function can_use_coupons() {
+		return true;
+	}
+
+	/** @return true */
+	public static function can_use_templates() {
+		return true;
+	}
+
+	/** @return true */
+	public static function can_use_webhooks() {
+		return true;
+	}
+
+	/** @return true */
+	public static function can_use_api() {
+		return true;
+	}
+
+	/** @return true */
+	public static function has_analytics() {
+		return true;
+	}
+
 	/**
 	 * Get current active links count
 	 *

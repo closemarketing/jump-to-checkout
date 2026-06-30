@@ -164,14 +164,12 @@ class JumpToCheckout {
 			$this->db = new \CLOSE\JumpToCheckout\Database\Database();
 		}
 
-		// FREE version: never calculate expiry. PRO can override via filter.
-		$expiry = apply_filters( 'jptc_link_expiry', 0, $name, $products );
+		$expiry = apply_filters( 'jptc_link_expiry', $expiry, $name, $products );
 
 		// Generate short token (new format: just a random ID, products stored in DB).
 		$token = $this->generate_short_token();
 		$url   = home_url( '/jump-to-checkout/' . $token );
 
-		// FREE version: never calculate expiry data. PRO will add it via filter.
 		$link_data = array(
 			'name'         => $name,
 			'token'        => $token,
@@ -181,7 +179,6 @@ class JumpToCheckout {
 			'expires_at'   => null,
 		);
 
-		// Allow PRO to modify link data before insert (PRO will add expiry data here).
 		$link_data = apply_filters( 'jptc_link_data_before_insert', $link_data, $name, $products, $expiry );
 
 		$link_id = $this->db->insert_link( $link_data );
