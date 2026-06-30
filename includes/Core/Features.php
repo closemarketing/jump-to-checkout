@@ -21,6 +21,78 @@ defined( 'ABSPATH' ) || exit;
 class Features {
 
 	/**
+	 * Backward-compat stub — all features are now available.
+	 *
+	 * @return bool
+	 */
+	public static function is_pro() {
+		return true;
+	}
+
+	/**
+	 * Backward-compat stub — returns empty string.
+	 *
+	 * @return string
+	 */
+	public static function get_upgrade_url() {
+		return '';
+	}
+
+	/**
+	 * Backward-compat stub — export is always available.
+	 *
+	 * @return bool
+	 */
+	public static function can_export() {
+		return true;
+	}
+
+	/**
+	 * Backward-compat stub — coupons are always available.
+	 *
+	 * @return bool
+	 */
+	public static function can_use_coupons() {
+		return true;
+	}
+
+	/**
+	 * Backward-compat stub — templates are always available.
+	 *
+	 * @return bool
+	 */
+	public static function can_use_templates() {
+		return true;
+	}
+
+	/**
+	 * Backward-compat stub — webhooks are always available.
+	 *
+	 * @return bool
+	 */
+	public static function can_use_webhooks() {
+		return true;
+	}
+
+	/**
+	 * Backward-compat stub — API is always available.
+	 *
+	 * @return bool
+	 */
+	public static function can_use_api() {
+		return true;
+	}
+
+	/**
+	 * Backward-compat stub — analytics are always available.
+	 *
+	 * @return bool
+	 */
+	public static function has_analytics() {
+		return true;
+	}
+
+	/**
 	 * Get current active links count
 	 *
 	 * @return int
