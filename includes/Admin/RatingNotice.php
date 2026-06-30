@@ -29,6 +29,9 @@ class RatingNotice {
 	 * Constructor
 	 */
 	public function __construct() {
+		// Ensure install date is recorded even on plugin updates (activation hook doesn't run on updates).
+		self::record_installation();
+
 		add_action( 'admin_notices', array( $this, 'render_notice' ) );
 		add_action( 'wp_ajax_jptc_dismiss_rating', array( $this, 'handle_dismiss' ) );
 		add_action( 'admin_footer', array( $this, 'render_script' ) );
