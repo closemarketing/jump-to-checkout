@@ -245,6 +245,18 @@ class AdminPanel {
 						</p>
 					</div>
 
+					<div class="jump-to-checkout-rating-box">
+						<p class="jump-to-checkout-rating-stars">⭐⭐⭐⭐⭐</p>
+						<h3><?php esc_html_e( 'Enjoying Jump to Checkout?', 'jump-to-checkout' ); ?></h3>
+						<p><?php esc_html_e( 'If the plugin is useful, a quick review on WordPress.org helps others discover it — and motivates us to keep improving it.', 'jump-to-checkout' ); ?></p>
+						<a href="<?php echo esc_url( \CLOSE\JumpToCheckout\Admin\RatingNotice::REVIEW_URL ); ?>"
+							class="button button-primary jump-to-checkout-rating-cta"
+							target="_blank"
+							rel="noopener noreferrer">
+							<?php esc_html_e( 'Leave a Review', 'jump-to-checkout' ); ?> &#9733;
+						</a>
+					</div>
+
 					<div class="jump-to-checkout-info-box">
 						<h3><?php echo esc_html__( 'How it works', 'jump-to-checkout' ); ?></h3>
 						<ol>
@@ -269,6 +281,8 @@ class AdminPanel {
 							<code><?php echo esc_html( home_url( '/jump-to-checkout/{token}' ) ); ?></code>
 						</p>
 					</div>
+
+				
 				</div>
 			</div>
 		</div>

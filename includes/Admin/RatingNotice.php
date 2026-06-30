@@ -26,63 +26,72 @@ class RatingNotice {
 	const REVIEW_URL       = 'https://wordpress.org/support/plugin/jump-to-checkout/reviews/#new-post';
 
 	/**
+	 * Cached result of should_show() to avoid duplicate DB reads within a single request.
+	 *
+	 * @var bool|null
+	 */
+	private $show_cache = null;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		// Ensure install date is recorded even on plugin updates (activation hook doesn't run on updates).
+		// add_option() is a no-op when the option already exists, so this is cheap after first install.
 		self::record_installation();
 
 		add_action( 'admin_notices', array( $this, 'render_notice' ) );
 		add_action( 'wp_ajax_jptc_dismiss_rating', array( $this, 'handle_dismiss' ) );
-		add_action( 'admin_footer', array( $this, 'render_script' ) );
 	}
 
 	/**
-	 * Record installation date (called on plugin activation).
+	 * Record installation date once. Uses add_option() which is atomic and a no-op if already set.
 	 *
 	 * @return void
 	 */
 	public static function record_installation() {
-		if ( ! get_option( self::OPTION_INSTALLED ) ) {
-			update_option( self::OPTION_INSTALLED, time(), false );
-		}
+		add_option( self::OPTION_INSTALLED, time(), '', false );
 	}
 
 	/**
-	 * Whether the notice should be shown.
+	 * Whether the notice should be shown. Result is cached for the lifetime of the request.
 	 *
 	 * @return bool
 	 */
 	private function should_show() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return false;
+		if ( null !== $this->show_cache ) {
+			return $this->show_cache;
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return $this->show_cache = false;
 		}
 
 		$dismissed = get_option( self::OPTION_DISMISSED );
 
 		// Permanently dismissed.
 		if ( 'yes' === $dismissed ) {
-			return false;
+			return $this->show_cache = false;
 		}
 
 		// Snoozed: check if snooze period has passed.
 		if ( is_numeric( $dismissed ) && time() < (int) $dismissed ) {
-			return false;
+			return $this->show_cache = false;
 		}
 
 		$installed = (int) get_option( self::OPTION_INSTALLED );
 
 		if ( ! $installed ) {
-			return false;
+			return $this->show_cache = false;
 		}
 
 		$days_active = ( time() - $installed ) / DAY_IN_SECONDS;
 
-		return $days_active >= self::DAYS_BEFORE_SHOW;
+		return $this->show_cache = $days_active >= self::DAYS_BEFORE_SHOW;
 	}
 
 	/**
-	 * Render the admin notice.
+	 * Render the admin notice and its inline JS handler.
 	 *
 	 * @return void
 	 */
@@ -112,42 +121,6 @@ class RatingNotice {
 				</p>
 			</div>
 		</div>
-		<?php
-	}
-
-	/**
-	 * Handle AJAX dismiss request.
-	 *
-	 * @return void
-	 */
-	public function handle_dismiss() {
-		check_ajax_referer( 'jptc_rating_nonce', 'nonce' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( -1 );
-		}
-
-		$action = isset( $_POST['rating_action'] ) ? sanitize_key( $_POST['rating_action'] ) : 'yes';
-
-		if ( 'snooze' === $action ) {
-			update_option( self::OPTION_DISMISSED, time() + ( self::DAYS_SNOOZE * DAY_IN_SECONDS ), false );
-		} else {
-			update_option( self::OPTION_DISMISSED, 'yes', false );
-		}
-
-		wp_send_json_success();
-	}
-
-	/**
-	 * Render inline JS to handle notice actions.
-	 *
-	 * @return void
-	 */
-	public function render_script() {
-		if ( ! $this->should_show() ) {
-			return;
-		}
-		?>
 		<script>
 		(function() {
 			var notice = document.querySelector('.jptc-rating-notice');
@@ -161,12 +134,33 @@ class RatingNotice {
 					data.append('nonce', '<?php echo esc_js( wp_create_nonce( 'jptc_rating_nonce' ) ); ?>');
 					data.append('rating_action', action);
 
-					fetch(ajaxurl, {method: 'POST', body: data});
+					fetch(ajaxurl, {method: 'POST', body: data, keepalive: true});
 					notice.style.display = 'none';
 				});
 			});
 		})();
 		</script>
 		<?php
+	}
+
+	/**
+	 * Handle AJAX dismiss request.
+	 *
+	 * @return void
+	 */
+	public function handle_dismiss() {
+		check_ajax_referer( 'jptc_rating_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( null, 403 );
+		}
+
+		if ( 'snooze' === sanitize_key( $_POST['rating_action'] ?? '' ) ) {
+			update_option( self::OPTION_DISMISSED, time() + ( self::DAYS_SNOOZE * DAY_IN_SECONDS ), false );
+		} else {
+			update_option( self::OPTION_DISMISSED, 'yes', false );
+		}
+
+		wp_send_json_success();
 	}
 }
