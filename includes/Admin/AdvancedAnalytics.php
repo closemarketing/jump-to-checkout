@@ -36,8 +36,8 @@ class AdvancedAnalytics {
 	public function add_analytics_menu() {
 		add_submenu_page(
 			'jptc-jump-to-checkout',
-			__( 'Analytics', 'jump-to-checkout' ),
-			__( 'Analytics', 'jump-to-checkout' ),
+			__( 'Stats', 'jump-to-checkout' ),
+			__( 'Stats', 'jump-to-checkout' ),
 			'manage_woocommerce',
 			'jptc-analytics',
 			array( $this, 'render_analytics_page' )
@@ -108,7 +108,7 @@ class AdvancedAnalytics {
 	public function render_analytics_page() {
 		?>
 		<div class="wrap jptc-analytics-wrap">
-			<h1><?php echo esc_html__( 'Analytics', 'jump-to-checkout' ); ?></h1>
+			<h1><?php echo esc_html__( 'Stats', 'jump-to-checkout' ); ?></h1>
 
 			<div class="jptc-analytics-dashboard">
 				<div class="jptc-analytics-stats">
