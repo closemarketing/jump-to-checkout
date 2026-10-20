@@ -97,6 +97,40 @@ class Test_AdvancedAnalytics extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A repeated menu registration must not duplicate the Analytics link.
+	 *
+	 * @return void
+	 */
+	public function test_analytics_menu_is_registered_once() {
+		global $submenu;
+
+		$previous_submenu = $submenu;
+		$previous_user_id = get_current_user_id();
+		$user_id          = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$user             = get_user_by( 'id', $user_id );
+		$user->add_cap( 'manage_woocommerce' );
+		wp_set_current_user( $user_id );
+		$submenu['jptc-jump-to-checkout'] = array();
+
+		try {
+			$this->analytics->add_analytics_menu();
+			$this->analytics->add_analytics_menu();
+
+			$analytics_items = array_filter(
+				$submenu['jptc-jump-to-checkout'],
+				function ( $item ) {
+					return 'jptc-analytics' === $item[2];
+				}
+			);
+
+			$this->assertCount( 1, $analytics_items );
+		} finally {
+			$submenu = $previous_submenu;
+			wp_set_current_user( $previous_user_id );
+		}
+	}
+
+	/**
 	 * Test enqueue_analytics_scripts skips non-analytics pages
 	 *
 	 * @return void

@@ -82,10 +82,24 @@ class AdminPanel {
 			JTPC_VERSION
 		);
 
+		wp_enqueue_style(
+			'jptc-select2',
+			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/css/select2.min.css',
+			array(),
+			'4.1.0'
+		);
+		wp_enqueue_script(
+			'jptc-select2',
+			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/js/select2.min.js',
+			array( 'jquery' ),
+			'4.1.0',
+			true
+		);
+
 		wp_enqueue_script(
 			'jptc-admin',
 			JTPC_PLUGIN_URL . 'assets/js/admin.js',
-			array( 'jquery' ),
+			array( 'jptc-select2' ),
 			JTPC_VERSION,
 			true
 		);
@@ -117,20 +131,6 @@ class AdminPanel {
 
 		// Allow other classes to enqueue their scripts for this hook.
 		do_action( 'jptc_enqueue_admin_scripts', $hook );
-
-		wp_enqueue_style(
-			'jptc-select2',
-			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/css/select2.min.css',
-			array(),
-			'4.1.0'
-		);
-		wp_enqueue_script(
-			'jptc-select2',
-			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/js/select2.min.js',
-			array( 'jquery' ),
-			'4.1.0',
-			true
-		);
 	}
 
 	/**

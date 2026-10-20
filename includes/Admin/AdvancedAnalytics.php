@@ -34,6 +34,14 @@ class AdvancedAnalytics {
 	 * @return void
 	 */
 	public function add_analytics_menu() {
+		global $submenu;
+
+		foreach ( $submenu['jptc-jump-to-checkout'] ?? array() as $item ) {
+			if ( 'jptc-analytics' === $item[2] ) {
+				return;
+			}
+		}
+
 		add_submenu_page(
 			'jptc-jump-to-checkout',
 			__( 'Analytics', 'jump-to-checkout' ),
