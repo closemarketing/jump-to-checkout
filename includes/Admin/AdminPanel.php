@@ -82,6 +82,20 @@ class AdminPanel {
 			JTPC_VERSION
 		);
 
+		wp_enqueue_style(
+			'jptc-select2',
+			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/css/select2.min.css',
+			array(),
+			'4.1.0'
+		);
+		wp_enqueue_script(
+			'jptc-select2',
+			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/js/select2.min.js',
+			array( 'jquery' ),
+			'4.1.0',
+			true
+		);
+
 		wp_enqueue_script(
 			'jptc-admin',
 			JTPC_PLUGIN_URL . 'assets/js/admin.js',
@@ -94,9 +108,10 @@ class AdminPanel {
 			'jptc-admin',
 			'jptcAdmin',
 			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'jptc_admin_nonce' ),
-				'i18n'     => array(
+				'ajax_url'    => admin_url( 'admin-ajax.php' ),
+				'nonce'       => wp_create_nonce( 'jptc_admin_nonce' ),
+				'select2_url' => JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/js/select2.min.js?ver=4.1.0',
+				'i18n'        => array(
 					'copy_success'           => __( 'Link copied to clipboard!', 'jump-to-checkout' ),
 					'copy_error'             => __( 'Failed to copy link.', 'jump-to-checkout' ),
 					'generate_error'         => __( 'Error generating link.', 'jump-to-checkout' ),
@@ -117,20 +132,6 @@ class AdminPanel {
 
 		// Allow other classes to enqueue their scripts for this hook.
 		do_action( 'jptc_enqueue_admin_scripts', $hook );
-
-		wp_enqueue_style(
-			'jptc-select2',
-			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/css/select2.min.css',
-			array(),
-			'4.1.0'
-		);
-		wp_enqueue_script(
-			'jptc-select2',
-			JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/js/select2.min.js',
-			array( 'jquery' ),
-			'4.1.0',
-			true
-		);
 	}
 
 	/**

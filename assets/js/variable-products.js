@@ -7,14 +7,28 @@
 	document.addEventListener('DOMContentLoaded', function() {
 		initVariableProducts();
 	});
+	document.addEventListener('jptc:select2-ready', bindProductSelection);
 
 	/**
 	 * Initialize variable products functionality
 	 */
 	function initVariableProducts() {
-		// Listen for product selection in Select2.
+		bindProductSelection();
+
+		// Listen for variation attribute changes.
+		document.addEventListener('change', function(e) {
+			if (e.target.classList.contains('jptc-variation-select')) {
+				handleVariationAttributeChange();
+			}
+		});
+	}
+
+	/**
+	 * Listen for product selection once Select2 is available.
+	 */
+	function bindProductSelection() {
 		if (typeof jQuery !== 'undefined' && jQuery.fn.select2) {
-			jQuery('.jump-to-checkout-product-search').on('select2:select', function(e) {
+			jQuery('.jump-to-checkout-product-search').off('select2:select.jptcVariable').on('select2:select.jptcVariable', function(e) {
 				const data = e.params.data;
 				const productId = data.id;
 
@@ -23,17 +37,10 @@
 			});
 
 			// Listen for product removal.
-			jQuery('.jump-to-checkout-product-search').on('select2:clear', function() {
+			jQuery('.jump-to-checkout-product-search').off('select2:clear.jptcVariable').on('select2:clear.jptcVariable', function() {
 				hideVariationSelector();
 			});
 		}
-
-		// Listen for variation attribute changes.
-		document.addEventListener('change', function(e) {
-			if (e.target.classList.contains('jptc-variation-select')) {
-				handleVariationAttributeChange();
-			}
-		});
 	}
 
 	/**

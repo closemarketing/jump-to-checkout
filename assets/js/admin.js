@@ -12,8 +12,25 @@
 	 * Initialize Select2 for product search
 	 */
 	function initSelect2() {
-		if (typeof jQuery === 'undefined' || typeof jQuery.fn.select2 === 'undefined') {
-			console.error('jQuery or Select2 not loaded');
+		if (typeof jQuery === 'undefined') {
+			console.error('jQuery not loaded');
+			return;
+		}
+
+		if (typeof jQuery.fn.select2 === 'undefined') {
+			const script = document.createElement('script');
+			script.src = jptcAdmin.select2_url;
+			script.onload = function() {
+				if (typeof jQuery.fn.select2 === 'function') {
+					initSelect2();
+				} else {
+					console.error('Select2 not available after loading');
+				}
+			};
+			script.onerror = function() {
+				console.error('Select2 could not be loaded');
+			};
+			document.head.appendChild(script);
 			return;
 		}
 
@@ -51,6 +68,8 @@
 		jQuery('.jump-to-checkout-product-search').on('select2:clear', function() {
 			hideVariationSelector();
 		});
+
+		document.dispatchEvent(new Event('jptc:select2-ready'));
 	}
 
 	/**

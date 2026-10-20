@@ -5,7 +5,7 @@ Tags: woocommerce, checkout, direct link, cart, conversion
 Requires at least: 5.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -173,6 +173,10 @@ The plugin only stores basic link statistics (visits and conversions). No person
 5. Generated Link - Copy and share your secure checkout link
 
 == Changelog ==
+
+= 1.1.1 =
+* Fixed: Product search loading in the link generator when Select2 is missing from the page.
+* Fixed: Duplicate Analytics menu entries.
 
 = 1.1.0 =
 * Added: Variable products and variations support
