@@ -3,6 +3,7 @@
 .git
 .gitignore
 .DS_Store
+AGENTS.md
 composer.lock
 .wordpress-org
 docs/
