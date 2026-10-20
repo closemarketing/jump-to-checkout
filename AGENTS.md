@@ -160,3 +160,19 @@ Three GitHub Actions workflows:
 - Never add features or refactoring beyond the scope of the current task.
 - When modifying the DB schema, increment `jptc_db_version` and handle the migration in `maybe_create_table`.
 - Do not use `base64_encode`/`base64_decode` for new code — only kept for legacy token backward compatibility.
+
+
+## Build a release
+
+Actions for making a release:
+- Update the plugin version in its header and `JTPC_VERSION` constant.
+- Finalize the changelog in `readme.txt` changelog entries under the released version.
+- Create the matching GitHub release and tag.
+
+## Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of PHPUnit tests needed to ensure code quality and speed. Use `composer test -- --filter=<test-name>` for focused coverage.
+- `tests/Unit/ConnectorTest.php` — PHPUnit tests that mock Odoo HTTP responses via `pre_http_request`
+- `tests/Data/` — mock JSON files for login, module listing, field definitions, create responses, and search responses
+- The bootstrap loads the parent FormsCRM plugin first (`../formscrm/formscrm.php`), then this plugin
