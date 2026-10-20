@@ -50,21 +50,22 @@ class Test_AdminPanel extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Select2 must be loaded before the link generator script.
+	 * The link generator must load even if the Select2 handle is unavailable.
 	 *
 	 * @return void
 	 */
-	public function test_admin_script_depends_on_select2() {
+	public function test_admin_script_has_independent_select2_fallback() {
 		$this->admin_panel->enqueue_admin_scripts( 'toplevel_page_jptc-jump-to-checkout' );
 
 		$this->assertTrue( wp_script_is( 'jptc-select2', 'enqueued' ) );
 		$this->assertTrue( wp_script_is( 'jptc-admin', 'enqueued' ) );
-		$this->assertContains( 'jptc-select2', wp_scripts()->registered['jptc-admin']->deps );
+		$this->assertContains( 'jquery', wp_scripts()->registered['jptc-admin']->deps );
+		$this->assertNotContains( 'jptc-select2', wp_scripts()->registered['jptc-admin']->deps );
+		$this->assertStringContainsString( 'select2_url', wp_scripts()->get_data( 'jptc-admin', 'data' ) );
 
-		wp_scripts()->all_deps( array( 'jptc-admin' ) );
 		$this->assertLessThan(
-			array_search( 'jptc-admin', wp_scripts()->to_do, true ),
-			array_search( 'jptc-select2', wp_scripts()->to_do, true )
+			array_search( 'jptc-admin', wp_scripts()->queue, true ),
+			array_search( 'jptc-select2', wp_scripts()->queue, true )
 		);
 	}
 

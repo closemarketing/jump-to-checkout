@@ -99,7 +99,7 @@ class AdminPanel {
 		wp_enqueue_script(
 			'jptc-admin',
 			JTPC_PLUGIN_URL . 'assets/js/admin.js',
-			array( 'jptc-select2' ),
+			array( 'jquery' ),
 			JTPC_VERSION,
 			true
 		);
@@ -108,9 +108,10 @@ class AdminPanel {
 			'jptc-admin',
 			'jptcAdmin',
 			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'jptc_admin_nonce' ),
-				'i18n'     => array(
+				'ajax_url'    => admin_url( 'admin-ajax.php' ),
+				'nonce'       => wp_create_nonce( 'jptc_admin_nonce' ),
+				'select2_url' => JTPC_PLUGIN_URL . 'vendor/select2/select2/dist/js/select2.min.js?ver=4.1.0',
+				'i18n'        => array(
 					'copy_success'           => __( 'Link copied to clipboard!', 'jump-to-checkout' ),
 					'copy_error'             => __( 'Failed to copy link.', 'jump-to-checkout' ),
 					'generate_error'         => __( 'Error generating link.', 'jump-to-checkout' ),
