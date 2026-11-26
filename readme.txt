@@ -3,7 +3,7 @@ Contributors: closetechnology, davidperez, alexbreagarcia
 Donate link: https://close.technology
 Tags: woocommerce, checkout, direct link, cart, conversion
 Requires at least: 5.0
-Tested up to: 7.0
+Tested up to: 7.2
 Requires PHP: 7.4
 Stable tag: 1.1.2
 License: GPLv2 or later
